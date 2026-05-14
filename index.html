@@ -747,9 +747,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 // ⚠️  PASTE YOUR KEYS HERE — REPLACE THE PLACEHOLDERS
 // ═══════════════════════════════════════════════════
 const CONFIG = {
-  SUPABASE_URL: 'https://xarqooyyxuoepngickuz.supabase.co',
-  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcnFvb3l5eHVvZXBuZ2lja3V6Iiwicm9sZSI6ImFub24iLCJpYXQiOj',
-  STRIPE_PUBLISHABLE_KEY: 'pk_live_51TVgN2DFHqQbeMA2SndJuliDuor8Eg4WRk8aV8KiLHZZX84XgLwOjflbTAyz4pnPxi1FpQ1c5MSRaldvwY7bv9vd00aVQHeKDO',
+  SUPABASE_URL: 'PASTE_YOUR_SUPABASE_URL_HERE',
+  SUPABASE_ANON_KEY: 'PASTE_YOUR_SUPABASE_ANON_KEY_HERE',
+  STRIPE_PUBLISHABLE_KEY: 'PASTE_YOUR_STRIPE_PUBLISHABLE_KEY_HERE',
   STRIPE_PRICES: {
     starter: 'price_1TX6ETDFHqQbeMA2lKGNVBE7',
     custom:  'price_1TX6FCDFHqQbeMA2r6qgYXCP',
@@ -794,6 +794,144 @@ const fcCards = [
    es:{f:"Nombra una opción sin alcohol.",b:"Las Olas Sparkler — cítricos frescos, jarabe de la casa, agua con gas. $7. Siempre mencionarlo."}}
 ];
 
+
+// ── INIT SUPABASE ──
+try {
+  supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+} catch(e) { console.log('Supabase not configured — demo mode'); }
+
+// ── VIEW TOGGLES ──
+function showSignupView() {
+  document.getElementById('loginFormView').style.display = 'none';
+  document.getElementById('signupFormView').style.display = 'block';
+}
+
+function showLoginView() {
+  document.getElementById('loginFormView').style.display = 'block';
+  document.getElementById('signupFormView').style.display = 'none';
+}
+
+function setRole(role, el) {
+  currentRole = role;
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function openCheckout(plan) {
+  checkoutPlan = plan;
+  document.getElementById('co-plan').textContent = CONFIG.PLAN_NAMES[plan] || plan;
+  document.getElementById('co-price').textContent = CONFIG.PLAN_PRICES[plan] || '';
+  document.getElementById('checkoutOverlay').className = 'checkout-overlay show';
+}
+
+function closeCheckout() {
+  document.getElementById('checkoutOverlay').className = 'checkout-overlay';
+}
+
+
+
+// ── LANGUAGE ──
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = lang === 'es' ? el.dataset.es : el.dataset.en;
+  });
+  const btn = document.getElementById('langBtn');
+  if(btn) btn.textContent = lang === 'es' ? 'ES' : 'EN';
+  updateCard();
+}
+
+function toggleLang() {
+  setLang(currentLang === 'en' ? 'es' : 'en');
+}
+
+function setLoginLang(lang) {
+  currentLang = lang;
+  document.getElementById('loginLangEn').classList.toggle('active', lang === 'en');
+  document.getElementById('loginLangEs').classList.toggle('active', lang === 'es');
+}
+
+// ── AUTH ──
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginError');
+  err.className = 'login-error';
+  if (!email || !pass) {
+    err.textContent = 'Please enter your email and password.';
+    err.className = 'login-error show'; return;
+  }
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+  try {
+    if (supabaseClient) {
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+      if (error) throw error;
+      currentUser = { email: data.user.email, name: data.user.user_metadata?.full_name || email.split('@')[0], role: currentRole };
+    } else {
+      currentUser = { email, name: email.split('@')[0], role: currentRole };
+    }
+    launchApp();
+  } catch(e) {
+    err.textContent = e.message || 'Sign in failed. Please check your credentials.';
+    err.className = 'login-error show';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Sign in to FloorPass';
+}
+
+async function doSignup() {
+  const first = document.getElementById('sigFirst').value.trim();
+  const last = document.getElementById('sigLast').value.trim();
+  const email = document.getElementById('sigEmail').value.trim();
+  const rest = document.getElementById('sigRest').value.trim();
+  const pass = document.getElementById('sigPass').value;
+  const plan = document.getElementById('sigPlan').value;
+  const err = document.getElementById('signupError');
+  err.className = 'login-error';
+  if (!first || !last || !email || !rest || pass.length < 8) {
+    err.textContent = 'Please complete all fields. Password must be 8+ characters.';
+    err.className = 'login-error show'; return;
+  }
+  try {
+    if (supabaseClient) {
+      const { data, error } = await supabaseClient.auth.signUp({
+        email, password: pass,
+        options: { data: { full_name: first + ' ' + last, restaurant: rest, plan, role: 'employee' } }
+      });
+      if (error) throw error;
+    }
+    currentUser = { email, name: first + ' ' + last, role: 'employee', restaurant: rest, plan };
+    openCheckout(plan);
+  } catch(e) {
+    err.textContent = e.message || 'Signup failed. Please try again.';
+    err.className = 'login-error show';
+  }
+}
+
+function launchApp() {
+  const isMgr = currentRole === 'manager';
+  document.getElementById('loginView').style.display = 'none';
+  document.getElementById('mainView').style.display = 'block';
+  const initials = (currentUser.name || 'U').substring(0,2).toUpperCase();
+  document.getElementById('navAv').textContent = initials;
+  document.getElementById('profileAv').textContent = initials;
+  document.getElementById('profileName').textContent = currentUser.name || currentUser.email;
+  document.getElementById('profileEmail').textContent = currentUser.email || '';
+  document.getElementById('profileRole').textContent = (isMgr ? 'Manager' : 'Host') + ' · ' + (currentUser.restaurant || 'YOLO Fort Lauderdale');
+  document.getElementById('dashGreet').textContent = 'Welcome back, ' + (currentUser.name || 'there') + ' 👋';
+  document.getElementById('dashSub').textContent = (isMgr ? 'Manager' : 'Host') + ' · FloorPass';
+  document.getElementById('mgrSection').style.display = isMgr ? 'block' : 'none';
+  setLang(currentLang);
+}
+
+async function doLogout() {
+  if (supabaseClient) await supabaseClient.auth.signOut();
+  currentUser = null;
+  document.getElementById('mainView').style.display = 'none';
+  document.getElementById('loginView').style.display = 'block';
+}
 
 async function processCheckout() {
   const name = document.getElementById('co-name').value.trim();
