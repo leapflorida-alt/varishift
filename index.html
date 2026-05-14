@@ -968,8 +968,7 @@ async function processCheckout() {
         successUrl: window.location.href + '?success=true',
         cancelUrl: window.location.href + '?canceled=true',
         customerEmail: email,
-        clientReferenceId: restaurant,
-        trialPeriodDays: 14
+        clientReferenceId: restaurant
       });
       if (error) throw error;
     } else {
