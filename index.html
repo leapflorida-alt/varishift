@@ -748,7 +748,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 // ═══════════════════════════════════════════════════
 const CONFIG = {
   SUPABASE_URL: 'https://xarqooyyxuoepngickuz.supabase.co',
-  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcnFvb3l5eHVvZXBuZ2lja3V6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0MDg3OTQsImV4cCI6MjA5Mzk4NDc5NH0.JXqB-AYo3su-jLNwCsIJb9xz09ApjNMm9HVoGTk81jU',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcnFvb3l5eHVvZXBuZ2lja3V6Iiwicm9sZSI6ImFub24iLCJpYXQiOj',
   STRIPE_PUBLISHABLE_KEY: 'pk_live_51TVgN2DFHqQbeMA2SndJuliDuor8Eg4WRk8aV8KiLHZZX84XgLwOjflbTAyz4pnPxi1FpQ1c5MSRaldvwY7bv9vd00aVQHeKDO',
   STRIPE_PRICES: {
     starter: 'price_1TX6ETDFHqQbeMA2lKGNVBE7',
@@ -760,13 +760,16 @@ const CONFIG = {
 };
 // ═══════════════════════════════════════════════════
 
+// Payment Links
+const PAYMENT_LINKS = {
+  starter: 'https://buy.stripe.com/00wbJ1g5Cce92rNfhr3Ru03',
+  custom:  'https://buy.stripe.com/9B66oH8Da7XT2rNfhr3Ru02',
+  group:   'https://buy.stripe.com/9B64gz4mU91X1nJ0mx3Ru04'
+};
+
 // Init Supabase + Stripe
 let supabaseClient = null;
 let stripe = null;
-try {
-  supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-  stripe = Stripe(CONFIG.STRIPE_PUBLISHABLE_KEY);
-} catch(e) { console.log('Keys not yet configured — running in demo mode'); }
 
 // ── STATE ──
 let currentLang = 'en';
@@ -774,14 +777,15 @@ let currentRole = 'employee';
 let currentUser = null;
 let fcIdx = 0;
 let fcFlipped = false;
+let checkoutPlan = 'custom';
 
 const fcCards = [
   {en:{f:"What is the YOLO Mule?",b:"House-infused vodka, ginger beer, fresh lime, cucumber. $14 — most popular cocktail."},
    es:{f:"¿Qué es el YOLO Mule?",b:"Vodka infusionado, cerveza de jengibre, lima fresca, pepino. $14 — el cóctel más popular."}},
   {en:{f:"Name two signature cocktails.",b:"1. YOLO Mule $14  2. Las Olas Lemonade — vodka, elderflower, fresh lemon, prosecco. $13"},
    es:{f:"Nombra dos cócteles de la casa.",b:"1. YOLO Mule $14  2. Las Olas Lemonade — vodka, flor de saúco, limón fresco, prosecco. $13"}},
-  {en:{f:"What are happy hour hours?",b:"Mon–Fri 3–7 PM at bar & fire pit only. $8 cocktails, $5 drafts, half-price apps."},
-   es:{f:"¿Cuáles son los horarios de happy hour?",b:"Lun–Vie 3–7 PM solo en la barra y fogata. $8 cócteles, $5 cervezas, aperitivos a mitad de precio."}},
+  {en:{f:"What are happy hour hours?",b:"Mon-Fri 3-7 PM at bar and fire pit only. $8 cocktails, $5 drafts, half-price apps."},
+   es:{f:"¿Cuáles son los horarios de happy hour?",b:"Lun-Vie 3-7 PM solo en la barra y fogata. $8 cócteles, $5 cervezas, aperitivos a mitad de precio."}},
   {en:{f:"What whiskey cocktail is on the menu?",b:"Old Fashioned YOLO — Knob Creek, house bitters, orange zest. $15. Smoked tableside."},
    es:{f:"¿Qué cóctel de whiskey está en el menú?",b:"Old Fashioned YOLO — Knob Creek, bitters de la casa, ralladura de naranja. $15. Ahumado en la mesa."}},
   {en:{f:"What wine is available by the glass?",b:"Whispering Angel rosé $16, Caymus Cabernet $18, Cakebread Chardonnay $16."},
@@ -790,159 +794,6 @@ const fcCards = [
    es:{f:"Nombra una opción sin alcohol.",b:"Las Olas Sparkler — cítricos frescos, jarabe de la casa, agua con gas. $7. Siempre mencionarlo."}}
 ];
 
-// ── LANGUAGE ──
-function setLang(lang) {
-  currentLang = lang;
-  document.querySelectorAll('[data-en]').forEach(el => {
-    el.textContent = lang === 'es' ? el.dataset.es : el.dataset.en;
-  });
-  document.getElementById('langBtn').textContent = lang === 'es' ? '🇪🇸 ES' : '🇺🇸 EN';
-  updateCard();
-}
-
-function toggleLang() {
-  setLang(currentLang === 'en' ? 'es' : 'en');
-}
-
-function setLoginLang(lang) {
-  currentLang = lang;
-  document.getElementById('loginLangEn').classList.toggle('active', lang === 'en');
-  document.getElementById('loginLangEs').classList.toggle('active', lang === 'es');
-  const t = {
-    en: { product:'FloorPass — Restaurant Training', tagline:'"Verified for every shift"', emp:'Employee', mgr:'Manager', email:'Email', pass:'Password', btn:'Sign in to FloorPass', note:'New to Verishift?' },
-    es: { product:'FloorPass — Entrenamiento de Restaurantes', tagline:'"Verificado para cada turno"', emp:'Empleado', mgr:'Gerente', email:'Correo electrónico', pass:'Contraseña', btn:'Iniciar sesión en FloorPass', note:'¿Nuevo en Verishift?' }
-  }[lang];
-  document.getElementById('lp-product').textContent = t.product;
-  document.getElementById('lp-tagline').textContent = t.tagline;
-  document.getElementById('tab-emp').textContent = t.emp;
-  document.getElementById('tab-mgr').textContent = t.mgr;
-  document.getElementById('lbl-email').textContent = t.email;
-  document.getElementById('lbl-pass').textContent = t.pass;
-  document.getElementById('loginBtn').textContent = t.btn;
-}
-
-// ── AUTH ──
-function setRole(role, el) {
-  currentRole = role;
-  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-}
-
-function showLoginView() {
-  document.getElementById('loginFormView').style.display = 'block';
-  document.getElementById('signupFormView').style.display = 'none';
-}
-
-function showSignupView() {
-  document.getElementById('loginFormView').style.display = 'none';
-  document.getElementById('signupFormView').style.display = 'block';
-}
-
-async function doLogin() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass = document.getElementById('loginPass').value;
-  const err = document.getElementById('loginError');
-  err.className = 'login-error';
-
-  if (!email || !pass) {
-    err.textContent = currentLang === 'es' ? 'Por favor ingresa tu correo y contraseña.' : 'Please enter your email and password.';
-    err.className = 'login-error show'; return;
-  }
-
-  const btn = document.getElementById('loginBtn');
-  btn.disabled = true;
-  btn.textContent = currentLang === 'es' ? 'Iniciando sesión...' : 'Signing in...';
-
-  try {
-    if (supabaseClient) {
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
-      if (error) throw error;
-      currentUser = { email: data.user.email, name: data.user.user_metadata?.full_name || email.split('@')[0], role: currentRole };
-    } else {
-      // Demo mode
-      currentUser = { email, name: email.split('@')[0], role: currentRole };
-    }
-    launchApp();
-  } catch(e) {
-    err.textContent = e.message || (currentLang === 'es' ? 'Error al iniciar sesión. Verifica tus credenciales.' : 'Sign in failed. Please check your credentials.');
-    err.className = 'login-error show';
-  }
-  btn.disabled = false;
-  btn.textContent = currentLang === 'es' ? 'Iniciar sesión en FloorPass' : 'Sign in to FloorPass';
-}
-
-async function doSignup() {
-  const first = document.getElementById('sigFirst').value.trim();
-  const last = document.getElementById('sigLast').value.trim();
-  const email = document.getElementById('sigEmail').value.trim();
-  const rest = document.getElementById('sigRest').value.trim();
-  const pass = document.getElementById('sigPass').value;
-  const plan = document.getElementById('sigPlan').value;
-  const err = document.getElementById('signupError');
-  err.className = 'login-error';
-
-  if (!first || !last || !email || !rest || pass.length < 8) {
-    err.textContent = currentLang === 'es' ? 'Por favor completa todos los campos. La contraseña debe tener 8+ caracteres.' : 'Please complete all fields. Password must be 8+ characters.';
-    err.className = 'login-error show'; return;
-  }
-
-  try {
-    if (supabaseClient) {
-      const { data, error } = await supabaseClient.auth.signUp({
-        email, password: pass,
-        options: { data: { full_name: `${first} ${last}`, restaurant: rest, plan, role: 'employee' } }
-      });
-      if (error) throw error;
-    }
-    currentUser = { email, name: `${first} ${last}`, role: 'employee', restaurant: rest, plan };
-    openCheckout(plan, email, `${first} ${last}`, rest);
-  } catch(e) {
-    err.textContent = e.message || 'Signup failed. Please try again.';
-    err.className = 'login-error show';
-  }
-}
-
-function launchApp() {
-  const isMgr = currentUser.role === 'manager' || currentRole === 'manager';
-  document.getElementById('loginView').style.display = 'none';
-  document.getElementById('mainView').style.display = 'block';
-  document.getElementById('navAv').textContent = (currentUser.name || 'U').substring(0,2).toUpperCase();
-  document.getElementById('profileAv').textContent = (currentUser.name || 'U').substring(0,2).toUpperCase();
-  document.getElementById('profileName').textContent = currentUser.name || currentUser.email;
-  document.getElementById('profileEmail').textContent = currentUser.email || '';
-  document.getElementById('profileRole').textContent = (isMgr ? 'Manager' : 'Host') + ' · YOLO Fort Lauderdale';
-  document.getElementById('dashGreet').textContent = (currentLang === 'es' ? 'Bienvenido, ' : 'Welcome back, ') + (currentUser.name || 'there') + ' 👋';
-  document.getElementById('dashSub').textContent = (isMgr ? 'Manager' : 'Host') + ' · YOLO Fort Lauderdale · FloorPass';
-  document.getElementById('mgrSection').style.display = isMgr ? 'block' : 'none';
-  setLang(currentLang);
-}
-
-async function doLogout() {
-  if (supabaseClient) await supabaseClient.auth.signOut();
-  currentUser = null;
-  document.getElementById('mainView').style.display = 'none';
-  document.getElementById('loginView').style.display = 'block';
-  showScreen('dashboard', null);
-  document.querySelector('.snav-item').classList.add('active');
-}
-
-// ── STRIPE CHECKOUT ──
-let checkoutPlan = 'custom';
-
-function openCheckout(plan, email = '', name = '', restaurant = '') {
-  checkoutPlan = plan;
-  document.getElementById('co-title').textContent = currentLang === 'es' ? 'Inicia tu prueba gratuita' : 'Start your free trial';
-  document.getElementById('co-plan').textContent = CONFIG.PLAN_NAMES[plan] || plan;
-  document.getElementById('co-price').textContent = CONFIG.PLAN_PRICES[plan] || '';
-  if (email) document.getElementById('co-email').value = email;
-  if (name) document.getElementById('co-name').value = name;
-  if (restaurant) document.getElementById('co-rest').value = restaurant;
-  document.getElementById('checkoutOverlay').className = 'checkout-overlay show';
-}
-
-function closeCheckout() {
-  document.getElementById('checkoutOverlay').className = 'checkout-overlay';
-}
 
 async function processCheckout() {
   const name = document.getElementById('co-name').value.trim();
@@ -950,38 +801,13 @@ async function processCheckout() {
   const restaurant = document.getElementById('co-rest').value.trim();
   const err = document.getElementById('co-error');
   err.className = 'login-error';
-
   if (!name || !email || !restaurant) {
     err.textContent = currentLang === 'es' ? 'Por favor completa todos los campos.' : 'Please complete all fields.';
     err.className = 'login-error show'; return;
   }
-
-  const btn = document.getElementById('co-btn');
-  btn.disabled = true;
-  document.getElementById('co-btn-text').textContent = currentLang === 'es' ? 'Redirigiendo a Stripe...' : 'Redirecting to Stripe...';
-
-  try {
-    if (stripe) {
-      const { error } = await stripe.redirectToCheckout({
-        lineItems: [{ price: CONFIG.STRIPE_PRICES[checkoutPlan], quantity: 1 }],
-        mode: 'subscription',
-        successUrl: window.location.href + '?success=true',
-        cancelUrl: window.location.href + '?canceled=true',
-        customerEmail: email,
-        clientReferenceId: restaurant
-      });
-      if (error) throw error;
-    } else {
-      // Demo mode — simulate success
-      closeCheckout();
-      alert('Demo mode: Stripe not yet configured. In production this opens the Stripe payment page.');
-    }
-  } catch(e) {
-    err.textContent = e.message || 'Payment error. Please try again.';
-    err.className = 'login-error show';
-    btn.disabled = false;
-    document.getElementById('co-btn-text').textContent = currentLang === 'es' ? 'Iniciar prueba gratuita' : 'Start free trial — pay nothing today';
-  }
+  const link = PAYMENT_LINKS[checkoutPlan] || PAYMENT_LINKS.custom;
+  window.open(link, '_blank');
+  closeCheckout();
 }
 
 // Check for Stripe redirect result
