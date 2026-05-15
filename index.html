@@ -5,280 +5,145 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Verishift — FloorPass</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://js.stripe.com/v3/"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
 <style>
-/* ── PASTE YOUR KEYS HERE ── */
-/* See the CONFIG section in the script below */
-
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-:root{
-  --navy:#0a0f1e;
-  --blue:#1d4ed8;
-  --cyan:#0891b2;
-  --green:#15803d;
-  --amber:#b45309;
-  --red:#dc2626;
-  --bg:#f8fafc;
-  --bg2:#f1f5f9;
-  --bg3:#e2e8f0;
-  --border:#e2e8f0;
-  --text:#0f172a;
-  --text2:#475569;
-  --text3:#94a3b8;
-  --radius:12px;
-  --touch:48px;
-  --nav-h:56px;
-  --sidebar-w:220px;
-}
+:root{--navy:#0a0f1e;--blue:#1d4ed8;--cyan:#0891b2;--green:#15803d;--amber:#b45309;--red:#dc2626;--bg:#f8fafc;--bg2:#f1f5f9;--border:#e2e8f0;--text:#0f172a;--text2:#475569;--text3:#94a3b8;--radius:12px;--touch:48px;--nav-h:56px;--sidebar-w:220px}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-
-/* NAV */
-.topnav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:var(--navy);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:200;box-shadow:0 2px 12px rgba(0,0,0,0.3)}
-.nav-logo{font-size:18px;font-weight:700;color:#fff;letter-spacing:-0.3px}.nav-logo span{color:#38bdf8}
+.topnav{position:fixed;top:0;left:0;right:0;height:var(--nav-h);background:var(--navy);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:200}
+.nav-logo{font-size:18px;font-weight:700;color:#fff}.nav-logo span{color:#38bdf8}
 .nav-product{font-size:11px;background:rgba(56,189,248,0.15);color:#38bdf8;padding:3px 10px;border-radius:10px;border:1px solid rgba(56,189,248,0.3);font-weight:500}
 .nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
-.nav-lang-btn{font-size:12px;background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:500;min-height:36px}
-.nav-lang-btn:hover{background:rgba(255,255,255,0.2)}
-.nav-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer;flex-shrink:0}
+.nav-lang-btn{font-size:12px;background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;font-weight:500}
+.nav-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;cursor:pointer}
 .hamburger{width:var(--touch);height:var(--touch);display:none;align-items:center;justify-content:center;cursor:pointer;border:none;background:none;color:#fff;font-size:24px}
-
-/* SIDEBAR */
-.sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid var(--border);position:fixed;top:var(--nav-h);bottom:0;left:0;overflow-y:auto;z-index:100;transition:transform 0.25s ease}
+.sidebar{width:var(--sidebar-w);background:#fff;border-right:1px solid var(--border);position:fixed;top:var(--nav-h);bottom:0;left:0;overflow-y:auto;z-index:100;transition:transform 0.25s}
 .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:99}
 .sidebar-inner{padding:12px 8px}
 .snav-label{font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;padding:10px 10px 4px}
-.snav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;color:var(--text2);margin-bottom:2px;min-height:var(--touch);transition:all 0.15s;border:1.5px solid transparent}
+.snav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;color:var(--text2);margin-bottom:2px;min-height:var(--touch);transition:all 0.15s}
 .snav-item:hover{background:var(--bg2);color:var(--text)}
-.snav-item.active{background:#eff6ff;color:var(--blue);font-weight:600;border-color:#dbeafe}
+.snav-item.active{background:#eff6ff;color:var(--blue);font-weight:600}
 .snav-item i{font-size:18px;width:20px;text-align:center;flex-shrink:0}
 .snav-badge{margin-left:auto;background:#ef4444;color:#fff;font-size:9px;padding:2px 7px;border-radius:8px;font-weight:700}
-
-/* LAYOUT */
 .app-body{display:flex;padding-top:var(--nav-h);min-height:100vh}
 .main{margin-left:var(--sidebar-w);flex:1;padding:24px 20px;min-width:0}
 .screen{display:none}.screen.active{display:block}
-.pg-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:-0.3px}
+.pg-title{font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px}
 .pg-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
-
-/* STATS */
 .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
 .stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:16px}
 .stat-label{font-size:11px;color:var(--text2);margin-bottom:5px;font-weight:500}
-.stat-value{font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px}
+.stat-value{font-size:26px;font-weight:700;color:var(--text)}
 .stat-sub{font-size:10px;color:var(--text3);margin-top:3px}
-
-/* CARDS */
 .card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:16px}
 .card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.card-title i{font-size:17px}
-
-/* MODULE ROWS */
 .mod-list{display:flex;flex-direction:column;gap:8px}
 .mod-row{display:flex;align-items:center;gap:12px;padding:13px;background:var(--bg);border-radius:10px;cursor:pointer;min-height:var(--touch);transition:all 0.15s;border:1px solid transparent}
-.mod-row:hover{background:#fff;border-color:var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.06)}
-.mod-row:active{transform:scale(0.99)}
+.mod-row:hover{background:#fff;border-color:var(--border)}
 .mod-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.mi-blue{background:#eff6ff;color:var(--blue)}
-.mi-green{background:#f0fdf4;color:var(--green)}
-.mi-amber{background:#fffbeb;color:var(--amber)}
-.mi-red{background:#fef2f2;color:var(--red)}
-.mi-gray{background:var(--bg2);color:var(--text3)}
+.mi-blue{background:#eff6ff;color:var(--blue)}.mi-green{background:#f0fdf4;color:var(--green)}.mi-amber{background:#fffbeb;color:var(--amber)}.mi-red{background:#fef2f2;color:var(--red)}.mi-gray{background:var(--bg2);color:var(--text3)}
 .mod-info{flex:1;min-width:0}
-.mod-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mod-name{font-size:13px;font-weight:600;color:var(--text)}
 .mod-meta{font-size:11px;color:var(--text2);margin-top:2px}
-
-/* PILLS */
-.pill{display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:600;white-space:nowrap}
-.pill-green{background:#dcfce7;color:var(--green)}
-.pill-blue{background:#dbeafe;color:var(--blue)}
-.pill-amber{background:#fef3c7;color:var(--amber)}
-.pill-gray{background:var(--bg2);color:var(--text2)}
-.pill-red{background:#fee2e2;color:var(--red)}
-
-/* PROGRESS */
+.pill{display:inline-block;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:600}
+.pill-green{background:#dcfce7;color:var(--green)}.pill-blue{background:#dbeafe;color:var(--blue)}.pill-amber{background:#fef3c7;color:var(--amber)}.pill-gray{background:var(--bg2);color:var(--text2)}.pill-red{background:#fee2e2;color:var(--red)}
 .prog-bar{height:8px;border-radius:4px;background:var(--bg2);overflow:hidden;margin:4px 0}
 .prog-fill{height:100%;border-radius:4px;transition:width 0.5s}
-.pf-blue{background:linear-gradient(90deg,#3b82f6,#06b6d4)}
-.pf-green{background:#22c55e}
-.pf-amber{background:#f59e0b}
-
-/* BUTTONS */
+.pf-blue{background:linear-gradient(90deg,#3b82f6,#06b6d4)}.pf-green{background:#22c55e}.pf-amber{background:#f59e0b}
 .btn{display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;min-height:var(--touch);transition:all 0.15s}
 .btn-primary{background:var(--navy);color:#fff}.btn-primary:hover{background:var(--blue)}
 .btn-blue{background:var(--blue);color:#fff}.btn-blue:hover{background:#1e40af}
 .btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#166534}
 .btn-outline{background:transparent;color:var(--text);border:1.5px solid var(--border)}.btn-outline:hover{background:var(--bg2)}
-.btn-danger{background:var(--red);color:#fff}.btn-danger:hover{background:#b91c1c}
-.btn-stripe{background:linear-gradient(135deg,#635bff,#0891b2);color:#fff}.btn-stripe:hover{opacity:0.92}
+.btn-danger{background:var(--red);color:#fff}
 .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
-
-/* LEVEL CARDS */
 .level-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
 .lc{border-radius:var(--radius);padding:16px;border:2px solid transparent}
-.lc1{background:#f0fdf4;border-color:#22c55e}
-.lc2{background:#fffbeb;border-color:#f59e0b;opacity:0.7}
-.lc3{background:#fdf2f8;border-color:#ec4899;opacity:0.4}
+.lc1{background:#f0fdf4;border-color:#22c55e}.lc2{background:#fffbeb;border-color:#f59e0b;opacity:0.7}.lc3{background:#fdf2f8;border-color:#ec4899;opacity:0.4}
 .lc-title{font-size:13px;font-weight:700;margin-bottom:4px}
 .lc1 .lc-title{color:var(--green)}.lc2 .lc-title{color:var(--amber)}.lc3 .lc-title{color:#9d174d}
 .lc-sub{font-size:11px;margin-bottom:10px}
 .lc1 .lc-sub{color:#16a34a}.lc2 .lc-sub{color:#d97706}.lc3 .lc-sub{color:#be185d}
-
-/* PRICING CARDS */
-.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px}
-.plan-card{background:#fff;border:2px solid var(--border);border-radius:var(--radius);padding:22px;position:relative;transition:all 0.15s;cursor:pointer}
-.plan-card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.1)}
-.plan-card.featured{border-color:var(--blue);background:#eff6ff}
-.plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;font-size:10px;padding:3px 14px;border-radius:10px;white-space:nowrap;font-weight:700}
-.plan-name{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px}
-.plan-price{font-size:32px;font-weight:700;color:var(--text);letter-spacing:-0.5px;margin-bottom:4px}
-.plan-price span{font-size:14px;font-weight:400;color:var(--text2)}
-.plan-desc{font-size:12px;color:var(--text2);margin-bottom:16px}
-.plan-features{margin-bottom:18px}
-.pf{display:flex;align-items:flex-start;gap:7px;font-size:12px;color:var(--text2);padding:3px 0}
-.pf i{color:var(--blue);font-size:14px;flex-shrink:0;margin-top:1px}
-.plan-btn{width:100%;padding:12px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:none;transition:all 0.15s;min-height:var(--touch)}
-.plan-btn-primary{background:var(--navy);color:#fff}.plan-btn-primary:hover{background:var(--blue)}
-.plan-btn-outline{background:transparent;color:var(--text);border:2px solid var(--border)}.plan-btn-outline:hover{background:var(--bg2)}
-
-/* LOGIN */
-.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(160deg,var(--navy),#0f1f3d)}
-.login-box{background:#fff;border-radius:20px;padding:32px;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(0,0,0,0.3)}
-.login-logo{text-align:center;font-size:28px;font-weight:700;color:var(--text);margin-bottom:4px;letter-spacing:-0.5px}
-.login-logo span{color:var(--blue)}
-.login-product{text-align:center;font-size:12px;color:var(--text2);margin-bottom:4px}
-.login-tagline{text-align:center;font-size:11px;color:var(--text3);margin-bottom:22px;font-style:italic}
-.lang-row{display:flex;gap:8px;margin-bottom:18px}
-.lang-btn{flex:1;padding:10px;border:2px solid var(--border);border-radius:10px;background:#fff;font-size:13px;cursor:pointer;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;min-height:var(--touch);color:var(--text);transition:all 0.15s}
-.lang-btn.active{border-color:var(--blue);background:#eff6ff;color:var(--blue)}
-.role-tabs{display:flex;background:var(--bg);border-radius:12px;padding:4px;margin-bottom:18px;gap:4px}
-.role-tab{flex:1;text-align:center;padding:10px;border-radius:9px;font-size:13px;cursor:pointer;color:var(--text2);font-weight:600;min-height:var(--touch);display:flex;align-items:center;justify-content:center;transition:all 0.15s}
-.role-tab.active{background:#fff;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.1)}
-.field{margin-bottom:14px}
-.field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px}
-.field input,.field select{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:10px;font-size:15px;background:#fff;color:var(--text);transition:border-color 0.15s;min-height:var(--touch);-webkit-appearance:none}
-.field input:focus,.field select:focus{outline:none;border-color:var(--blue)}
-.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;min-height:var(--touch);letter-spacing:0.2px;transition:opacity 0.15s}
-.login-btn:hover{opacity:0.92}
-.login-btn:disabled{opacity:0.5;cursor:not-allowed}
-.login-note{text-align:center;font-size:11px;color:var(--text3);margin-top:10px}
-.login-error{background:#fee2e2;border:1px solid #fecaca;border-radius:10px;padding:10px 14px;font-size:12px;color:var(--red);margin-bottom:14px;display:none}
-.login-error.show{display:block}
-.divider{display:flex;align-items:center;gap:12px;margin:16px 0}
-.divider-line{flex:1;height:1px;background:var(--border)}
-.divider-text{font-size:12px;color:var(--text3)}
-.switch-link{text-align:center;font-size:12px;color:var(--text2);margin-top:14px}
-.switch-link span{color:var(--blue);cursor:pointer;font-weight:600}
-
-/* STRIPE CHECKOUT */
-.checkout-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:center;justify-content:center;padding:20px}
-.checkout-overlay.show{display:flex}
-.checkout-box{background:#fff;border-radius:20px;padding:28px;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,0.3)}
-.checkout-title{font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px}
-.checkout-sub{font-size:13px;color:var(--text2);margin-bottom:20px}
-.checkout-plan{background:var(--bg);border-radius:10px;padding:14px;margin-bottom:18px;display:flex;align-items:center;justify-content:space-between}
-.checkout-plan-name{font-size:14px;font-weight:700;color:var(--text)}
-.checkout-plan-price{font-size:18px;font-weight:700;color:var(--blue)}
-.checkout-btn{width:100%;padding:14px;background:linear-gradient(135deg,#635bff,#0891b2);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;min-height:var(--touch);transition:opacity 0.15s}
-.checkout-btn:hover{opacity:0.92}
-.checkout-btn:disabled{opacity:0.5;cursor:not-allowed}
-.checkout-note{text-align:center;font-size:11px;color:var(--text3);margin-top:10px}
-.checkout-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
-
-/* ANALYTICS */
+.staff-table{width:100%;border-collapse:collapse;font-size:13px}
+.staff-table th{text-align:left;padding:8px 12px;font-size:10px;font-weight:700;color:var(--text2);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:0.5px}
+.staff-table td{padding:12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
+.staff-table tr:hover td{background:var(--bg)}
+.prog-mini{height:5px;border-radius:3px;background:var(--bg2);width:70px;display:inline-block;vertical-align:middle;margin-right:5px;overflow:hidden}
+.prog-mini-fill{height:100%;border-radius:3px;background:var(--blue)}
 .bar-chart{display:flex;flex-direction:column;gap:10px}
 .bar-row{display:flex;align-items:center;gap:10px;font-size:12px}
 .bar-label{width:80px;color:var(--text2);text-align:right;flex-shrink:0}
 .bar-track{flex:1;height:18px;background:var(--bg2);border-radius:5px;overflow:hidden}
 .bar-fill{height:100%;border-radius:5px;transition:width 0.6s}
 .bar-val{width:40px;color:var(--text);font-weight:700}
-
-/* STAFF TABLE */
-.staff-table{width:100%;border-collapse:collapse;font-size:13px}
-.staff-table th{text-align:left;padding:8px 12px;font-size:10px;font-weight:700;color:var(--text2);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:0.5px}
-.staff-table td{padding:12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:middle}
-.staff-table tr:last-child td{border-bottom:none}
-.staff-table tr:hover td{background:var(--bg)}
-.prog-mini{height:5px;border-radius:3px;background:var(--bg2);width:70px;display:inline-block;vertical-align:middle;margin-right:5px;overflow:hidden}
-.prog-mini-fill{height:100%;border-radius:3px;background:var(--blue)}
-
-/* FLASHCARDS */
 .fc-wrap{display:flex;flex-direction:column;align-items:center;gap:16px}
-.fc{width:100%;max-width:460px;min-height:170px;border-radius:16px;border:2px solid var(--border);background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center;cursor:pointer;position:relative;box-shadow:0 4px 16px rgba(0,0,0,0.06);transition:transform 0.15s}
-.fc:active{transform:scale(0.98)}
+.fc{width:100%;max-width:460px;min-height:170px;border-radius:16px;border:2px solid var(--border);background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;text-align:center;cursor:pointer;position:relative;box-shadow:0 4px 16px rgba(0,0,0,0.06)}
 .fc-front{font-size:17px;font-weight:700;color:var(--text)}
 .fc-back{font-size:14px;color:var(--text2);display:none;line-height:1.6}
-.fc.flipped .fc-front{display:none}
-.fc.flipped .fc-back{display:block}
+.fc.flipped .fc-front{display:none}.fc.flipped .fc-back{display:block}
 .fc-hint{position:absolute;bottom:12px;font-size:10px;color:var(--text3)}
 .fc-nav{display:flex;gap:14px;align-items:center}
-.fc-btn{min-width:var(--touch);min-height:var(--touch);padding:0 18px;border-radius:10px;border:2px solid var(--border);background:#fff;color:var(--text);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-weight:600}
-.fc-btn:active{background:var(--bg2)}
-
-/* NOTIFICATIONS */
+.fc-btn{min-width:var(--touch);min-height:var(--touch);padding:0 18px;border-radius:10px;border:2px solid var(--border);background:#fff;color:var(--text);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:600}
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:linear-gradient(160deg,var(--navy),#0f1f3d)}
+.login-box{background:#fff;border-radius:20px;padding:32px;width:100%;max-width:380px;box-shadow:0 24px 64px rgba(0,0,0,0.3)}
+.login-logo{text-align:center;font-size:28px;font-weight:700;color:var(--text);margin-bottom:4px}.login-logo span{color:var(--blue)}
+.login-product{text-align:center;font-size:12px;color:var(--text2);margin-bottom:4px}
+.login-tagline{text-align:center;font-size:11px;color:var(--text3);margin-bottom:22px;font-style:italic}
+.lang-row{display:flex;gap:8px;margin-bottom:18px}
+.lang-btn{flex:1;padding:10px;border:2px solid var(--border);border-radius:10px;background:#fff;font-size:13px;cursor:pointer;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;min-height:var(--touch);color:var(--text)}
+.lang-btn.active{border-color:var(--blue);background:#eff6ff;color:var(--blue)}
+.role-tabs{display:flex;background:var(--bg);border-radius:12px;padding:4px;margin-bottom:18px;gap:4px}
+.role-tab{flex:1;text-align:center;padding:10px;border-radius:9px;font-size:13px;cursor:pointer;color:var(--text2);font-weight:600;min-height:var(--touch);display:flex;align-items:center;justify-content:center}
+.role-tab.active{background:#fff;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.1)}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px}
+.field input,.field select{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:10px;font-size:15px;background:#fff;color:var(--text);min-height:var(--touch);-webkit-appearance:none}
+.field input:focus,.field select:focus{outline:none;border-color:var(--blue)}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;min-height:var(--touch)}
+.login-btn:disabled{opacity:0.5;cursor:not-allowed}
+.login-note{text-align:center;font-size:11px;color:var(--text3);margin-top:10px}
+.login-error{background:#fee2e2;border:1px solid #fecaca;border-radius:10px;padding:10px 14px;font-size:12px;color:var(--red);margin-bottom:14px;display:none}
+.login-error.show{display:block}
+.checkout-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;align-items:center;justify-content:center;padding:20px}
+.checkout-overlay.show{display:flex}
+.checkout-box{background:#fff;border-radius:20px;padding:28px;width:100%;max-width:420px;position:relative}
+.checkout-close{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:50%;background:var(--bg);border:none;cursor:pointer;font-size:16px}
 .alert-item{display:flex;gap:12px;padding:14px;border-radius:12px;margin-bottom:10px}
 .alert-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px}
 .alert-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
 .alert-desc{font-size:12px;color:var(--text2)}
-
-/* SUCCESS */
-.success-wrap{text-align:center;padding:32px 20px}
-.success-icon{font-size:52px;color:var(--green);margin-bottom:14px}
-.success-title{font-size:20px;font-weight:700;color:var(--text);margin-bottom:8px}
-.success-sub{font-size:14px;color:var(--text2);margin-bottom:20px;line-height:1.6}
-
-/* MOBILE */
-@media(max-width:768px){
-  .hamburger{display:flex}
-  .sidebar{transform:translateX(-100%)}
-  .sidebar.open{transform:translateX(0)}
-  .sidebar-overlay.show{display:block}
-  .main{margin-left:0;padding:16px 14px}
-  .stats-grid{grid-template-columns:1fr 1fr}
-  .level-cards{grid-template-columns:1fr 1fr 1fr}
-  .pg-title{font-size:19px}
-  .staff-table th:nth-child(n+5),.staff-table td:nth-child(n+5){display:none}
-}
-@media(max-width:480px){
-  .level-cards{grid-template-columns:1fr}
-  .pricing-grid{grid-template-columns:1fr}
-}
+@media(max-width:768px){.hamburger{display:flex}.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.sidebar-overlay.show{display:block}.main{margin-left:0;padding:16px 14px}.stats-grid{grid-template-columns:1fr 1fr}.level-cards{grid-template-columns:1fr 1fr 1fr}}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════════════════════════════════════
-     CHECKOUT OVERLAY
-═══════════════════════════════════════════════════ -->
+<!-- CHECKOUT -->
 <div class="checkout-overlay" id="checkoutOverlay">
-  <div class="checkout-box" style="position:relative">
-    <button class="checkout-close" onclick="closeCheckout()"><i class="ti ti-x"></i></button>
-    <div class="checkout-title" id="co-title">Start your free trial</div>
-    <div class="checkout-sub" id="co-sub">14 days free · No charge today · Cancel anytime</div>
-    <div class="checkout-plan">
-      <div class="checkout-plan-name" id="co-plan">FloorPass Custom</div>
-      <div class="checkout-plan-price" id="co-price">$149/mo</div>
-    </div>
-    <div class="field"><label id="co-name-lbl">Full name</label><input type="text" id="co-name" placeholder="Alex Garcia"/></div>
-    <div class="field"><label id="co-email-lbl">Work email</label><input type="email" id="co-email" placeholder="you@restaurant.com"/></div>
-    <div class="field"><label id="co-rest-lbl">Restaurant name</label><input type="text" id="co-rest" placeholder="YOLO Fort Lauderdale"/></div>
-    <div class="login-error" id="co-error"></div>
-    <button class="checkout-btn" id="co-btn" onclick="processCheckout()">
-      <i class="ti ti-lock" style="font-size:16px"></i> <span id="co-btn-text">Start free trial — pay nothing today</span>
-    </button>
-    <div class="checkout-note"><i class="ti ti-shield-check" style="font-size:11px"></i> Secured by Stripe · SSL encrypted · verishift.com</div>
+<div class="checkout-box">
+  <button class="checkout-close" onclick="closeCheckout()">✕</button>
+  <div style="font-size:18px;font-weight:700;margin-bottom:4px">Start your free trial</div>
+  <div style="font-size:13px;color:var(--text2);margin-bottom:20px">14 days free · No charge today</div>
+  <div style="background:var(--bg);border-radius:10px;padding:14px;margin-bottom:18px;display:flex;justify-content:space-between">
+    <span id="co-plan" style="font-weight:700">FloorPass Custom</span>
+    <span id="co-price" style="color:var(--blue);font-weight:700">$149/mo</span>
   </div>
+  <div class="field"><label>Full name</label><input type="text" id="co-name"/></div>
+  <div class="field"><label>Work email</label><input type="email" id="co-email"/></div>
+  <div class="field"><label>Restaurant name</label><input type="text" id="co-rest"/></div>
+  <div class="login-error" id="co-error"></div>
+  <button class="login-btn" onclick="processCheckout()">Start free trial — pay nothing today</button>
+  <div style="text-align:center;font-size:10px;color:var(--text3);margin-top:8px">Secured by Stripe · SSL encrypted</div>
+</div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════
-     LOGIN VIEW
-═══════════════════════════════════════════════════ -->
+<!-- LOGIN -->
 <div id="loginView">
 <div class="login-wrap">
 <div class="login-box">
   <div class="login-logo">Veri<span>shift</span></div>
-  <div class="login-product" id="lp-product">FloorPass — Restaurant Training</div>
-  <div class="login-tagline" id="lp-tagline">"Verified for every shift"</div>
+  <div class="login-product">FloorPass — Restaurant Training</div>
+  <div class="login-tagline">"Verified for every shift"</div>
   <div class="lang-row">
     <button class="lang-btn active" id="loginLangEn" onclick="setLoginLang('en')">🇺🇸 English</button>
     <button class="lang-btn" id="loginLangEs" onclick="setLoginLang('es')">🇪🇸 Español</button>
@@ -289,10 +154,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="role-tab" id="tab-mgr" onclick="setRole('manager',this)">Manager</div>
     </div>
     <div class="login-error" id="loginError"></div>
-    <div class="field"><label id="lbl-email">Email</label><input type="email" id="loginEmail" placeholder="you@restaurant.com"/></div>
-    <div class="field"><label id="lbl-pass">Password</label><input type="password" id="loginPass" placeholder="••••••••"/></div>
+    <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="you@restaurant.com"/></div>
+    <div class="field"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••"/></div>
     <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign in to FloorPass</button>
-    <div class="login-note" id="lp-note">New to Verishift? <span style="color:var(--blue);cursor:pointer" onclick="showSignupView()">Create account</span></div>
+    <div class="login-note">New to Verishift? <span style="color:var(--blue);cursor:pointer" onclick="showSignupView()">Create account</span></div>
   </div>
   <div id="signupFormView" style="display:none">
     <div class="login-error" id="signupError"></div>
@@ -310,712 +175,624 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <option value="group">FloorPass Group — $349/mo</option>
       </select>
     </div>
-    <button class="login-btn" onclick="doSignup()">Create account &amp; start free trial</button>
-    <div class="login-note">Already have an account? <span style="color:var(--blue);cursor:pointer" onclick="showLoginView()">Sign in</span></div>
+    <button class="login-btn" onclick="doSignup()">Create account & start free trial</button>
+    <div class="login-note"><span style="color:var(--blue);cursor:pointer" onclick="showLoginView()">Already have an account? Sign in</span></div>
   </div>
 </div>
 </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════
-     MAIN APP
-═══════════════════════════════════════════════════ -->
+<!-- MAIN APP -->
 <div id="mainView" style="display:none">
-
 <div class="topnav">
   <button class="hamburger" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
   <div class="nav-logo">Veri<span>shift</span></div>
   <div class="nav-product">FloorPass</div>
   <div class="nav-right">
     <button class="nav-lang-btn" onclick="toggleLang()" id="langBtn">🇺🇸 EN</button>
-    <div class="nav-av" id="navAv">SJ</div>
+    <div class="nav-av" id="navAv">JW</div>
   </div>
 </div>
-
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
 <div class="sidebar" id="sidebar">
   <div class="sidebar-inner">
-    <div class="snav-label" data-en="Training" data-es="Entrenamiento">Training</div>
-    <div class="snav-item active" onclick="showScreen('dashboard',this)"><i class="ti ti-layout-dashboard"></i><span data-en="Dashboard" data-es="Panel">Dashboard</span></div>
-    <div class="snav-item" onclick="showScreen('mytraining',this)"><i class="ti ti-stack-2"></i><span data-en="My Training" data-es="Mi Entrenamiento">My Training</span></div>
-    <div class="snav-item" onclick="showScreen('phonesim',this)"><i class="ti ti-phone"></i><span data-en="Phone Simulator" data-es="Simulador">Phone Simulator</span><span class="snav-badge">New</span></div>
-    <div class="snav-item" onclick="showScreen('floorsim',this)"><i class="ti ti-device-desktop"></i><span data-en="Floor Simulator" data-es="Piso">Floor Simulator</span></div>
-    <div class="snav-item" onclick="showScreen('flashcards',this)"><i class="ti ti-cards"></i><span data-en="Flashcards" data-es="Tarjetas">Flashcards</span></div>
-    <div class="snav-item" onclick="showScreen('quizzes',this)"><i class="ti ti-help-circle"></i><span data-en="Quizzes" data-es="Exámenes">Quizzes</span></div>
+    <div class="snav-label">Training</div>
+    <div class="snav-item active" onclick="showScreen('dashboard',this)"><i class="ti ti-layout-dashboard"></i>Dashboard</div>
+    <div class="snav-item" onclick="showScreen('mytraining',this)"><i class="ti ti-stack-2"></i>My Training</div>
+    <div class="snav-item" onclick="showScreen('phonesim',this)"><i class="ti ti-phone"></i>Phone Simulator<span class="snav-badge">New</span></div>
+    <div class="snav-item" onclick="showScreen('floorsim',this)"><i class="ti ti-device-desktop"></i>Floor Simulator</div>
+    <div class="snav-item" onclick="showScreen('flashcards',this)"><i class="ti ti-cards"></i>Flashcards</div>
+    <div class="snav-item" onclick="showScreen('quizzes',this)"><i class="ti ti-help-circle"></i>Quizzes</div>
     <div id="mgrSection" style="display:none">
-      <div class="snav-label" data-en="Manager" data-es="Gerente">Manager</div>
-      <div class="snav-item" onclick="showScreen('staff',this)"><i class="ti ti-users"></i><span data-en="Staff Progress" data-es="Progreso">Staff Progress</span></div>
-      <div class="snav-item" onclick="showScreen('analytics',this)"><i class="ti ti-chart-bar"></i><span data-en="Analytics" data-es="Análisis">Analytics</span></div>
-      <div class="snav-item" onclick="showScreen('alerts',this)"><i class="ti ti-bell"></i><span data-en="Alerts" data-es="Alertas">Alerts</span><span class="snav-badge">3</span></div>
-      <div class="snav-item" onclick="showScreen('reports',this)"><i class="ti ti-file-text"></i><span data-en="Reports" data-es="Reportes">Reports</span></div>
-      <div class="snav-item" onclick="showScreen('settings',this)"><i class="ti ti-settings"></i><span data-en="Settings" data-es="Configuración">Settings</span></div>
+      <div class="snav-label">Manager</div>
+      <div class="snav-item" onclick="showScreen('staff',this)"><i class="ti ti-users"></i>Staff Progress</div>
+      <div class="snav-item" onclick="showScreen('analytics',this)"><i class="ti ti-chart-bar"></i>Analytics</div>
+      <div class="snav-item" onclick="showScreen('alerts',this)"><i class="ti ti-bell"></i>Alerts<span class="snav-badge">3</span></div>
+      <div class="snav-item" onclick="showScreen('settings',this)"><i class="ti ti-settings"></i>Settings</div>
     </div>
-    <div class="snav-label" data-en="Account" data-es="Cuenta">Account</div>
-    <div class="snav-item" onclick="showScreen('profile',this)"><i class="ti ti-user"></i><span data-en="My Profile" data-es="Mi Perfil">My Profile</span></div>
-    <div class="snav-item" onclick="showScreen('billing',this)"><i class="ti ti-credit-card"></i><span data-en="Billing" data-es="Facturación">Billing</span></div>
-    <div class="snav-item" onclick="doLogout()"><i class="ti ti-logout"></i><span data-en="Sign out" data-es="Salir">Sign out</span></div>
+    <div class="snav-label">Account</div>
+    <div class="snav-item" onclick="showScreen('profile',this)"><i class="ti ti-user"></i>My Profile</div>
+    <div class="snav-item" onclick="showScreen('billing',this)"><i class="ti ti-credit-card"></i>Billing</div>
+    <div class="snav-item" onclick="doLogout()"><i class="ti ti-logout"></i>Sign out</div>
   </div>
 </div>
-
 <div class="app-body">
 <div class="main" id="mainContent">
 
-  <!-- DASHBOARD -->
-  <div class="screen active" id="screen-dashboard">
-    <div class="pg-title" id="dashGreet">Welcome back, Sarah 👋</div>
-    <div class="pg-sub" id="dashSub">Host · YOLO Fort Lauderdale · FloorPass Level 1</div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-label" data-en="Current Level" data-es="Nivel Actual">Current Level</div><div class="stat-value">L1</div><div class="stat-sub" data-en="Foundations" data-es="Fundamentos">Foundations</div></div>
-      <div class="stat-card"><div class="stat-label" data-en="Progress" data-es="Progreso">Progress</div><div class="stat-value">42%</div><div class="stat-sub" data-en="6 of 14 modules" data-es="6 de 14 módulos">6 of 14 modules</div></div>
-      <div class="stat-card"><div class="stat-label" data-en="Quiz Average" data-es="Promedio">Quiz Average</div><div class="stat-value">87%</div><div class="stat-sub" data-en="3 taken" data-es="3 tomados">3 taken</div></div>
-      <div class="stat-card"><div class="stat-label" data-en="Call Score" data-es="Llamadas">Call Score</div><div class="stat-value">90</div><div class="stat-sub" data-en="Last simulation" data-es="Última simulación">Last simulation</div></div>
+<!-- DASHBOARD -->
+<div class="screen active" id="screen-dashboard">
+  <div class="pg-title" id="dashGreet">Welcome back 👋</div>
+  <div class="pg-sub" id="dashSub">Host · YOLO Fort Lauderdale · FloorPass Level 1</div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Current Level</div><div class="stat-value">L1</div><div class="stat-sub">Foundations</div></div>
+    <div class="stat-card"><div class="stat-label">Progress</div><div class="stat-value">42%</div><div class="stat-sub">6 of 14 modules</div></div>
+    <div class="stat-card"><div class="stat-label">Quiz Average</div><div class="stat-value">87%</div><div class="stat-sub">3 taken</div></div>
+    <div class="stat-card"><div class="stat-label">Call Score</div><div class="stat-value">90</div><div class="stat-sub">Last simulation</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><i class="ti ti-bolt" style="color:#f59e0b"></i>Continue where you left off</div>
+    <div class="mod-list">
+      <div class="mod-row" onclick="showScreen('phonesim',null)"><div class="mod-icon mi-blue"><i class="ti ti-phone"></i></div><div class="mod-info"><div class="mod-name">Phone Reservation Simulator</div><div class="mod-meta">Level 1 · AI call practice · New</div></div><span class="pill pill-blue">Start</span></div>
+      <div class="mod-row" onclick="showScreen('floorsim',null)"><div class="mod-icon mi-blue"><i class="ti ti-device-desktop"></i></div><div class="mod-info"><div class="mod-name">Floor Plan Simulator — YOLO</div><div class="mod-meta">Scenario 2 in progress</div></div><span class="pill pill-amber">In progress</span></div>
+      <div class="mod-row" onclick="showScreen('flashcards',null)"><div class="mod-icon mi-amber"><i class="ti ti-cards"></i></div><div class="mod-info"><div class="mod-name">Drink Menu Flashcards</div><div class="mod-meta">YOLO cocktails · 10 cards</div></div><span class="pill pill-amber">In progress</span></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><i class="ti ti-trophy" style="color:#f59e0b"></i>Level 1 Progress</div>
+    <div style="display:flex;flex-direction:column;gap:10px;padding:4px 0">
+      <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Overall</span><span style="font-weight:600">42%</span></div><div class="prog-bar"><div class="prog-fill pf-blue" style="width:42%"></div></div></div>
+      <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Simulators</span><span style="font-weight:600">50%</span></div><div class="prog-bar"><div class="prog-fill pf-green" style="width:50%"></div></div></div>
+      <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span>Flashcards</span><span style="font-weight:600">67%</span></div><div class="prog-bar"><div class="prog-fill pf-amber" style="width:67%"></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MY TRAINING -->
+<div class="screen" id="screen-mytraining">
+  <div class="pg-title">My Training</div>
+  <div class="pg-sub">Complete each level to unlock the next — score 80%+ to pass</div>
+  <div class="level-cards">
+    <div class="lc lc1"><div class="lc-title">⭐ Level 1</div><div class="lc-sub">Foundations</div><div class="prog-bar"><div class="prog-fill pf-green" style="width:42%"></div></div><div style="font-size:11px;color:var(--text2)">42%</div></div>
+    <div class="lc lc2"><div class="lc-title">🔒 Level 2</div><div class="lc-sub">Proficiency</div><div class="prog-bar"><div class="prog-fill pf-amber" style="width:0%"></div></div><div style="font-size:11px;color:var(--text2)">Locked</div></div>
+    <div class="lc lc3"><div class="lc-title">🔒 Level 3</div><div class="lc-sub">Mastery</div><div class="prog-bar"><div class="prog-fill" style="width:0%;background:#ec4899"></div></div><div style="font-size:11px;color:var(--text2)">Locked</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><i class="ti ti-list-check" style="color:#22c55e"></i>Level 1 Modules</div>
+    <div class="mod-list">
+      <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">Intro to OpenTable</div><div class="mod-meta">5 min</div></div><span class="pill pill-green">Done ✓</span></div>
+      <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">Seating Walk-in Guests</div><div class="mod-meta">8 min</div></div><span class="pill pill-green">Done ✓</span></div>
+      <div class="mod-row" onclick="showScreen('phonesim',null)"><div class="mod-icon mi-blue"><i class="ti ti-phone"></i></div><div class="mod-info"><div class="mod-name">Phone Reservation Simulator</div><div class="mod-meta">AI call practice · New</div></div><span class="pill pill-blue">Start</span></div>
+      <div class="mod-row" onclick="showScreen('floorsim',null)"><div class="mod-icon mi-blue"><i class="ti ti-device-desktop"></i></div><div class="mod-info"><div class="mod-name">Floor Plan Simulator</div></div><span class="pill pill-amber">In progress</span></div>
+      <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">Food Menu Flashcards</div></div><span class="pill pill-green">Done ✓</span></div>
+      <div class="mod-row" onclick="showScreen('flashcards',null)"><div class="mod-icon mi-amber"><i class="ti ti-cards"></i></div><div class="mod-info"><div class="mod-name">Drink Menu Flashcards</div></div><span class="pill pill-amber">In progress</span></div>
+      <div class="mod-row" onclick="showScreen('quizzes',null)"><div class="mod-icon mi-red"><i class="ti ti-help-circle"></i></div><div class="mod-info"><div class="mod-name">Level 1 Final Quiz</div><div class="mod-meta">Must score 80%+</div></div><span class="pill pill-gray">Not started</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- PHONE SIM -->
+<div class="screen" id="screen-phonesim">
+  <div class="pg-title">Phone Simulator</div>
+  <div class="pg-sub">Practice reservation calls with an AI guest — scored in real time</div>
+  <div id="phone-intro" class="card" style="background:#f0fdf4;border-color:#bbf7d0;text-align:center;padding:28px">
+    <div style="font-size:40px;color:var(--green);margin-bottom:12px">📞</div>
+    <div style="font-size:16px;font-weight:700;color:var(--green);margin-bottom:6px">YOLO Fort Lauderdale — Incoming Call</div>
+    <div style="font-size:13px;color:#16a34a;margin-bottom:20px">The AI guest calls to make a reservation. Fill the form as you gather details. Scored on 7 criteria.</div>
+    <button class="btn btn-green" style="margin:0 auto" onclick="startPhoneSim()"><i class="ti ti-player-play"></i> Start Call Simulation</button>
+  </div>
+  <div id="phone-active" style="display:none">
+    <div class="card" style="background:#0a0f1e;color:#fff;padding:16px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+        <div style="width:44px;height:44px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;font-size:20px">📞</div>
+        <div><div style="font-size:14px;font-weight:700">Carlos Martinez</div><div style="font-size:11px;color:rgba(255,255,255,0.6)" id="call-timer">0:00</div></div>
+        <div style="margin-left:auto;background:#22c55e;color:#fff;padding:4px 12px;border-radius:10px;font-size:11px;font-weight:700" id="call-score">Score: 0</div>
+      </div>
+      <div id="call-transcript" style="background:rgba(255,255,255,0.05);border-radius:10px;padding:12px;min-height:120px;max-height:180px;overflow-y:auto;font-size:12px;margin-bottom:12px"></div>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="call-input" placeholder="Type your response as host..." style="flex:1;padding:10px;border-radius:8px;border:none;font-size:13px;background:rgba(255,255,255,0.1);color:#fff" onkeydown="if(event.key==='Enter')sendCallResponse()"/>
+        <button onclick="sendCallResponse()" style="padding:10px 16px;background:#22c55e;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700">Send</button>
+        <button onclick="endCall()" style="padding:10px 16px;background:#ef4444;color:#fff;border:none;border-radius:8px;cursor:pointer">End</button>
+      </div>
     </div>
     <div class="card">
-      <div class="card-title"><i class="ti ti-bolt" style="color:#f59e0b"></i><span data-en="Continue where you left off" data-es="Continúa donde lo dejaste">Continue where you left off</span></div>
+      <div class="card-title"><i class="ti ti-clipboard-list"></i>Reservation Form</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="field"><label>Guest name</label><input type="text" id="rf-name" placeholder="Last, First"/></div>
+        <div class="field"><label>Party size</label><select id="rf-size"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8+</option></select></div>
+        <div class="field"><label>Date</label><select id="rf-date"><option value="">—</option><option>Today</option><option>Tomorrow</option><option>May 15</option><option>May 16</option><option>May 17</option></select></div>
+        <div class="field"><label>Time</label><select id="rf-time"><option value="">—</option><option>5:00 PM</option><option>5:30 PM</option><option>6:00 PM</option><option>6:30 PM</option><option>7:00 PM</option><option>7:30 PM</option><option>8:00 PM</option><option>8:30 PM</option><option>9:00 PM</option></select></div>
+        <div class="field"><label>Phone</label><input type="text" id="rf-phone" placeholder="(954) 000-0000"/></div>
+        <div class="field"><label>Seating preference</label><select id="rf-seat"><option value="">—</option><option>Indoor</option><option>Outdoor patio</option><option>Bar area</option><option>O Lounge</option><option>No preference</option></select></div>
+      </div>
+      <div class="field"><label>Notes / Occasion</label><input type="text" id="rf-notes" placeholder="Anniversary, birthday, dietary needs..."/></div>
+      <button class="btn btn-primary" onclick="confirmRes()" style="margin-top:8px">Confirm Reservation</button>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-list-check"></i>Call Score Checklist</div>
+      <div style="display:flex;flex-direction:column;gap:8px" id="checklist">
+        <div id="ck-greeting" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-greeting-icon" style="font-size:16px">⭕</span>Proper greeting — named YOLO</div>
+        <div id="ck-name" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-name-icon" style="font-size:16px">⭕</span>Got guest name</div>
+        <div id="ck-size" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-size-icon" style="font-size:16px">⭕</span>Confirmed party size</div>
+        <div id="ck-time" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-time-icon" style="font-size:16px">⭕</span>Got date and time</div>
+        <div id="ck-phone" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-phone-icon" style="font-size:16px">⭕</span>Captured callback number</div>
+        <div id="ck-special" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-special-icon" style="font-size:16px">⭕</span>Asked about special needs</div>
+        <div id="ck-confirm" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-confirm-icon" style="font-size:16px">⭕</span>Confirmed reservation back</div>
+      </div>
+    </div>
+  </div>
+  <div id="phone-results" style="display:none"></div>
+</div>
+
+<!-- FLOOR SIM -->
+<div class="screen" id="screen-floorsim">
+  <div class="pg-title">Floor Simulator</div>
+  <div class="pg-sub">Practice seating guests on the YOLO Fort Lauderdale floor plan</div>
+  <div id="floor-intro" class="card" style="background:#eff6ff;border-color:#bfdbfe;text-align:center;padding:28px">
+    <div style="font-size:40px;color:var(--blue);margin-bottom:12px">🗺️</div>
+    <div style="font-size:16px;font-weight:700;color:var(--blue);margin-bottom:6px">YOLO Fort Lauderdale — Interactive Floor Plan</div>
+    <div style="font-size:13px;color:#1e40af;margin-bottom:20px">5 zones · 26 tables · 2 scenarios available</div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-blue" onclick="loadFloor(2)">Scenario 2 — Seat a Party</button>
+      <button class="btn btn-outline" onclick="loadFloor(3)">Scenario 3 — Full House</button>
+    </div>
+  </div>
+  <div id="floor-active" style="display:none">
+    <div class="card" style="padding:12px;margin-bottom:12px;background:#1a1a2e;color:#fff">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span id="floor-title" style="font-size:14px;font-weight:700;flex:1">Scenario 2</span>
+        <span id="floor-score" style="background:#4fc3f7;color:#1a1a2e;padding:3px 10px;border-radius:8px;font-size:12px;font-weight:700">Score: 0</span>
+        <button onclick="resetFloor()" style="background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer">Reset</button>
+      </div>
+      <div id="floor-instruction" style="font-size:12px;color:rgba(255,255,255,0.8)"></div>
+    </div>
+    <div class="card" style="padding:10px">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;font-size:11px">
+        <span>🟢 Available</span><span>🔴 Seated</span><span>🟡 Reserved</span><span>🟠 Turning</span>
+      </div>
+      <div id="floor-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px"></div>
+    </div>
+    <div class="card" id="floor-panel" style="display:none">
+      <div class="card-title"><i class="ti ti-armchair"></i>Selected Table</div>
+      <div id="floor-info" style="font-size:13px;margin-bottom:12px"></div>
+      <button class="btn btn-primary" id="floor-seat-btn" onclick="seatGuest()">Seat guests here</button>
+      <button class="btn btn-outline" onclick="document.getElementById('floor-panel').style.display='none'" style="margin-left:8px">Cancel</button>
+    </div>
+    <div id="floor-result" style="display:none"></div>
+  </div>
+</div>
+
+<!-- FLASHCARDS -->
+<div class="screen" id="screen-flashcards">
+  <div class="pg-title">Flashcards</div>
+  <div class="pg-sub">YOLO Fort Lauderdale — food & drink menu</div>
+  <div class="card">
+    <div class="card-title"><i class="ti ti-stack-2"></i>Select a deck</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      <button id="btn-drinks" class="btn btn-primary" onclick="switchDeck('drinks')" style="justify-content:center">🍹 Cocktails & Wine (10)</button>
+      <button id="btn-food" class="btn btn-outline" onclick="switchDeck('food')" style="justify-content:center">🍽️ Food Menu (10)</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title"><i class="ti ti-cards" style="color:var(--cyan)"></i>
+      <span id="deck-name">Cocktails & Wine</span>
+      <span style="margin-left:auto;font-size:12px;color:var(--text2)" id="fcLabel">1 / 10</span>
+    </div>
+    <div class="fc-wrap">
+      <div class="fc" id="fc" onclick="flipCard()">
+        <div class="fc-front" id="fc-front"></div>
+        <div class="fc-back" id="fc-back"></div>
+        <div class="fc-hint">tap to flip</div>
+      </div>
+      <div class="fc-nav">
+        <button class="fc-btn" onclick="prevCard()"><i class="ti ti-arrow-left"></i></button>
+        <span style="font-size:13px;color:var(--text2);font-weight:600" id="fcCount">1 / 10</span>
+        <button class="fc-btn" onclick="nextCard()"><i class="ti ti-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUIZZES -->
+<div class="screen" id="screen-quizzes">
+  <div class="pg-title">Quizzes</div>
+  <div class="pg-sub">Score 80%+ to pass and unlock the next module</div>
+  <div class="card">
+    <div class="card-title"><i class="ti ti-help-circle" style="color:#f59e0b"></i>Available Quizzes</div>
+    <div class="mod-list">
+      <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">L1 Quiz 1 — OpenTable Basics</div><div class="mod-meta">Score: 90%</div></div><span class="pill pill-green">Passed</span></div>
+      <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">L1 Quiz 2 — Menu Knowledge</div><div class="mod-meta">Score: 87%</div></div><span class="pill pill-green">Passed</span></div>
+      <div class="mod-row" onclick="startQuiz()" style="cursor:pointer"><div class="mod-icon mi-blue"><i class="ti ti-player-play"></i></div><div class="mod-info"><div class="mod-name">L1 Quiz 3 — Reservations & Scenarios</div><div class="mod-meta">Must score 80%+</div></div><span class="pill pill-blue">Take Quiz</span></div>
+      <div class="mod-row" style="opacity:0.5"><div class="mod-icon mi-gray"><i class="ti ti-lock"></i></div><div class="mod-info"><div class="mod-name">L2 Quiz 1 — Advanced Floor</div></div><span class="pill pill-gray">Locked</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- STAFF -->
+<div class="screen" id="screen-staff">
+  <div class="pg-title">Staff Progress</div>
+  <div class="pg-sub">YOLO Fort Lauderdale · All employees</div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Total Staff</div><div class="stat-value">12</div></div>
+    <div class="stat-card"><div class="stat-label">Certified</div><div class="stat-value" style="color:var(--green)">4</div></div>
+    <div class="stat-card"><div class="stat-label">In Training</div><div class="stat-value" style="color:var(--blue)">7</div></div>
+    <div class="stat-card"><div class="stat-label">Not Started</div><div class="stat-value" style="color:var(--red)">1</div></div>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary"><i class="ti ti-download"></i>Export Report</button>
+    <button class="btn btn-outline"><i class="ti ti-mail"></i>Send Reminders</button>
+  </div>
+  <div class="card">
+    <div class="card-title"><i class="ti ti-users"></i>Team Overview</div>
+    <div style="overflow-x:auto">
+      <table class="staff-table">
+        <thead><tr><th>Employee</th><th>Role</th><th>Level</th><th>Progress</th><th>Quiz</th><th>Call</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Sarah J.</strong></td><td>Host</td><td>L1</td><td><div class="prog-mini"><div class="prog-mini-fill" style="width:42%"></div></div>42%</td><td>87%</td><td>90</td><td><span class="pill pill-amber">Active</span></td></tr>
+          <tr><td><strong>Marcus R.</strong></td><td>Host</td><td>L2</td><td><div class="prog-mini"><div class="prog-mini-fill" style="width:78%"></div></div>78%</td><td>91%</td><td>95</td><td><span class="pill pill-blue">L2</span></td></tr>
+          <tr><td><strong>Aisha T.</strong></td><td>Server</td><td>L1</td><td><div class="prog-mini"><div class="prog-mini-fill" style="width:100%"></div></div>100%</td><td>94%</td><td>98</td><td><span class="pill pill-green">Certified</span></td></tr>
+          <tr><td><strong>Jake M.</strong></td><td>Host</td><td>L1</td><td><div class="prog-mini"><div class="prog-mini-fill" style="width:65%"></div></div>65%</td><td>82%</td><td>74</td><td><span class="pill pill-amber">Active</span></td></tr>
+          <tr><td><strong>Priya P.</strong></td><td>Server</td><td>L3</td><td><div class="prog-mini"><div class="prog-mini-fill" style="width:90%"></div></div>90%</td><td>96%</td><td>100</td><td><span class="pill pill-green">L3</span></td></tr>
+          <tr><td><strong>Tyler B.</strong></td><td>Host</td><td>—</td><td><div class="prog-mini"><div class="prog-mini-fill" style="width:0%"></div></div>0%</td><td>—</td><td>—</td><td><span class="pill pill-red">Not started</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYTICS -->
+<div class="screen" id="screen-analytics">
+  <div class="pg-title">Analytics</div>
+  <div class="pg-sub">Team performance · May 2026</div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Avg Quiz Score</div><div class="stat-value">88%</div><div class="stat-sub">Up 3% this week</div></div>
+    <div class="stat-card"><div class="stat-label">Avg Call Score</div><div class="stat-value">84</div><div class="stat-sub">18 calls total</div></div>
+    <div class="stat-card"><div class="stat-label">L1 Completion</div><div class="stat-value">67%</div></div>
+    <div class="stat-card"><div class="stat-label">Days to Certify</div><div class="stat-value">4.2</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><i class="ti ti-chart-bar" style="color:var(--blue)"></i>Quiz Scores by Employee</div>
+    <div class="bar-chart">
+      <div class="bar-row"><div class="bar-label">Priya P.</div><div class="bar-track"><div class="bar-fill" style="width:96%;background:#22c55e"></div></div><div class="bar-val">96%</div></div>
+      <div class="bar-row"><div class="bar-label">Aisha T.</div><div class="bar-track"><div class="bar-fill" style="width:94%;background:#22c55e"></div></div><div class="bar-val">94%</div></div>
+      <div class="bar-row"><div class="bar-label">Marcus R.</div><div class="bar-track"><div class="bar-fill" style="width:91%;background:#22c55e"></div></div><div class="bar-val">91%</div></div>
+      <div class="bar-row"><div class="bar-label">Sarah J.</div><div class="bar-track"><div class="bar-fill" style="width:87%;background:#22c55e"></div></div><div class="bar-val">87%</div></div>
+      <div class="bar-row"><div class="bar-label">Jake M.</div><div class="bar-track"><div class="bar-fill" style="width:82%;background:#f59e0b"></div></div><div class="bar-val">82%</div></div>
+      <div class="bar-row"><div class="bar-label">Tyler B.</div><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><div class="bar-val">—</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ALERTS -->
+<div class="screen" id="screen-alerts">
+  <div class="pg-title">Alerts</div>
+  <div class="pg-sub">3 items need your attention</div>
+  <div class="card">
+    <div class="card-title"><i class="ti ti-bell" style="color:var(--red)"></i>Action Required</div>
+    <div class="alert-item" style="background:#fef2f2;border:1px solid #fecaca"><div class="alert-dot" style="background:var(--red)"></div><div><div class="alert-title">Tyler Brooks — Not started</div><div class="alert-desc">Hired 6 days ago. Zero modules completed.</div><button class="btn btn-danger" style="margin-top:8px;padding:6px 12px;font-size:12px;min-height:auto">Send Reminder</button></div></div>
+    <div class="alert-item" style="background:#fffbeb;border:1px solid #fde68a"><div class="alert-dot" style="background:#f59e0b"></div><div><div class="alert-title">Destiny Cruz — Low call score (68)</div><div class="alert-desc">Below 80% threshold. Recommend coaching.</div></div></div>
+    <div class="alert-item" style="background:#fffbeb;border:1px solid #fde68a"><div class="alert-dot" style="background:#f59e0b"></div><div><div class="alert-title">Jake Moreno — Inactive 2 days</div><div class="alert-desc">Level 1 still at 65%. Last active May 11.</div></div></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="screen" id="screen-settings">
+  <div class="pg-title">Settings</div>
+  <div class="pg-sub">Configure FloorPass for your restaurant</div>
+  <div class="card">
+    <div class="card-title"><i class="ti ti-building"></i>Restaurant Profile</div>
+    <div class="field"><label>Restaurant name</label><input type="text" value="YOLO Fort Lauderdale"/></div>
+    <div class="field"><label>Reservation system</label><select><option>OpenTable</option><option>Resy</option><option>SevenRooms</option><option>Tock</option></select></div>
+    <div class="field"><label>Manager email</label><input type="email" value="manager@yolofl.com"/></div>
+    <div class="field"><label>Default language</label><select onchange="setLang(this.value)"><option value="en">English</option><option value="es">Español</option></select></div>
+    <button class="btn btn-primary" style="margin-top:6px"><i class="ti ti-check"></i>Save Settings</button>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div class="screen" id="screen-profile">
+  <div class="pg-title">My Profile</div>
+  <div class="pg-sub">Training history and certifications</div>
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px">
+      <div id="profileAv" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff">JW</div>
+      <div><div style="font-size:17px;font-weight:700" id="profileName">James Wells</div><div style="font-size:13px;color:var(--text2)" id="profileRole">Host · YOLO Fort Lauderdale</div><div style="font-size:11px;color:var(--text3)" id="profileEmail">jwellspro@gmail.com</div></div>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:14px">
+      <div class="card-title"><i class="ti ti-trophy" style="color:#f59e0b"></i>Certifications</div>
+      <div style="font-size:13px;color:var(--text2);padding:8px 0">Complete Level 1 to earn your FloorPass Foundations certificate.</div>
+    </div>
+    <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:10px">
+      <div class="card-title"><i class="ti ti-history"></i>Recent Activity</div>
       <div class="mod-list">
-        <div class="mod-row" onclick="showScreen('phonesim',null)">
-          <div class="mod-icon mi-blue"><i class="ti ti-phone"></i></div>
-          <div class="mod-info"><div class="mod-name" data-en="Phone Reservation Simulator" data-es="Simulador de Reservaciones">Phone Reservation Simulator</div><div class="mod-meta" data-en="Level 1 · AI call practice" data-es="Nivel 1 · Práctica IA">Level 1 · AI call practice</div></div>
-          <span class="pill pill-blue" data-en="Start" data-es="Iniciar">Start</span>
-        </div>
-        <div class="mod-row" onclick="showScreen('floorsim',null)">
-          <div class="mod-icon mi-blue"><i class="ti ti-device-desktop"></i></div>
-          <div class="mod-info"><div class="mod-name" data-en="Floor Plan Simulator — YOLO" data-es="Simulador de Piso — YOLO">Floor Plan Simulator — YOLO</div><div class="mod-meta" data-en="Scenario 2 in progress" data-es="Escenario 2 en progreso">Scenario 2 in progress</div></div>
-          <span class="pill pill-amber" data-en="In progress" data-es="En progreso">In progress</span>
-        </div>
-        <div class="mod-row" onclick="showScreen('flashcards',null)">
-          <div class="mod-icon mi-amber"><i class="ti ti-cards"></i></div>
-          <div class="mod-info"><div class="mod-name" data-en="Drink Menu Flashcards" data-es="Tarjetas de Bebidas">Drink Menu Flashcards</div><div class="mod-meta" data-en="YOLO cocktails · 18 cards" data-es="Cócteles YOLO · 18 tarjetas">YOLO cocktails · 18 cards</div></div>
-          <span class="pill pill-amber">12/18</span>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-trophy" style="color:#f59e0b"></i><span data-en="Level 1 — Foundations Progress" data-es="Nivel 1 — Progreso">Level 1 — Foundations Progress</span></div>
-      <div style="display:flex;flex-direction:column;gap:10px;padding:4px 0">
-        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span data-en="Overall" data-es="General">Overall</span><span style="font-weight:600">42%</span></div><div class="prog-bar"><div class="prog-fill pf-blue" style="width:42%"></div></div></div>
-        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span data-en="Simulators" data-es="Simuladores">Simulators</span><span style="font-weight:600">50%</span></div><div class="prog-bar"><div class="prog-fill pf-green" style="width:50%"></div></div></div>
-        <div><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span data-en="Flashcards" data-es="Tarjetas">Flashcards</span><span style="font-weight:600">67%</span></div><div class="prog-bar"><div class="prog-fill pf-amber" style="width:67%"></div></div></div>
+        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">Phone simulation — Score: 90</div><div class="mod-meta">May 12 · 3:42 min</div></div></div>
+        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">L1 Quiz 2 — Score: 87%</div><div class="mod-meta">May 11</div></div></div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- MY TRAINING -->
-  <div class="screen" id="screen-mytraining">
-    <div class="pg-title" data-en="My Training" data-es="Mi Entrenamiento">My Training</div>
-    <div class="pg-sub" data-en="Complete each level to unlock the next — score 80%+ to pass" data-es="Completa cada nivel para desbloquear el siguiente — obtén 80%+ para pasar">Complete each level to unlock the next</div>
-    <div class="level-cards">
-      <div class="lc lc1"><div class="lc-title" data-en="⭐ Level 1" data-es="⭐ Nivel 1">⭐ Level 1</div><div class="lc-sub" data-en="Foundations" data-es="Fundamentos">Foundations</div><div class="prog-bar"><div class="prog-fill pf-green" style="width:42%"></div></div><div style="font-size:11px;color:var(--text2)">42%</div></div>
-      <div class="lc lc2"><div class="lc-title" data-en="🔒 Level 2" data-es="🔒 Nivel 2">🔒 Level 2</div><div class="lc-sub" data-en="Proficiency" data-es="Competencia">Proficiency</div><div class="prog-bar"><div class="prog-fill pf-amber" style="width:0%"></div></div><div style="font-size:11px;color:var(--text2)" data-en="Locked" data-es="Bloqueado">Locked</div></div>
-      <div class="lc lc3"><div class="lc-title" data-en="🔒 Level 3" data-es="🔒 Nivel 3">🔒 Level 3</div><div class="lc-sub" data-en="Mastery" data-es="Maestría">Mastery</div><div class="prog-bar"><div class="prog-fill" style="width:0%;background:#ec4899"></div></div><div style="font-size:11px;color:var(--text2)" data-en="Locked" data-es="Bloqueado">Locked</div></div>
+<!-- BILLING -->
+<div class="screen" id="screen-billing">
+  <div class="pg-title">Billing</div>
+  <div class="pg-sub">Manage your Verishift subscription</div>
+  <div class="card" style="background:#eff6ff;border-color:#bfdbfe">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div><div style="font-size:16px;font-weight:700">FloorPass Custom</div><div style="font-size:13px;color:var(--text2)">$149/month · Trial active</div></div>
+      <span class="pill pill-green">Active</span>
     </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-list-check" style="color:#22c55e"></i><span data-en="Level 1 Modules" data-es="Módulos Nivel 1">Level 1 Modules</span></div>
-      <div class="mod-list">
-        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="Intro to OpenTable" data-es="Introducción a OpenTable">Intro to OpenTable</div><div class="mod-meta">5 min</div></div><span class="pill pill-green" data-en="Done ✓" data-es="Listo ✓">Done ✓</span></div>
-        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="Seating Walk-in Guests" data-es="Sentar Clientes">Seating Walk-in Guests</div><div class="mod-meta">8 min</div></div><span class="pill pill-green" data-en="Done ✓" data-es="Listo ✓">Done ✓</span></div>
-        <div class="mod-row" onclick="showScreen('phonesim',null)"><div class="mod-icon mi-blue"><i class="ti ti-phone"></i></div><div class="mod-info"><div class="mod-name" data-en="Phone Reservation Simulator" data-es="Simulador de Reservaciones">Phone Reservation Simulator</div><div class="mod-meta" data-en="AI call practice · New" data-es="Práctica IA · Nuevo">AI call practice · New</div></div><span class="pill pill-blue" data-en="Start" data-es="Iniciar">Start</span></div>
-        <div class="mod-row" onclick="showScreen('floorsim',null)"><div class="mod-icon mi-blue"><i class="ti ti-device-desktop"></i></div><div class="mod-info"><div class="mod-name" data-en="Floor Plan Simulator" data-es="Simulador de Piso">Floor Plan Simulator</div></div><span class="pill pill-amber" data-en="In progress" data-es="En progreso">In progress</span></div>
-        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="Food Menu Flashcards" data-es="Tarjetas del Menú">Food Menu Flashcards</div></div><span class="pill pill-green" data-en="Done ✓" data-es="Listo ✓">Done ✓</span></div>
-        <div class="mod-row" onclick="showScreen('flashcards',null)"><div class="mod-icon mi-amber"><i class="ti ti-cards"></i></div><div class="mod-info"><div class="mod-name" data-en="Drink Menu Flashcards" data-es="Tarjetas de Bebidas">Drink Menu Flashcards</div></div><span class="pill pill-amber">12/18</span></div>
-        <div class="mod-row" onclick="showScreen('quizzes',null)"><div class="mod-icon mi-red"><i class="ti ti-help-circle"></i></div><div class="mod-info"><div class="mod-name" data-en="Level 1 Final Quiz" data-es="Examen Final Nivel 1">Level 1 Final Quiz</div><div class="mod-meta" data-en="Must score 80%+" data-es="Debes obtener 80%+">Must score 80%+</div></div><span class="pill pill-gray" data-en="Not started" data-es="No iniciado">Not started</span></div>
-      </div>
+    <div style="background:#fff;border-radius:10px;padding:14px;font-size:13px;color:var(--text2)">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Trial ends</span><span style="font-weight:600;color:var(--text)">May 28, 2026</span></div>
+      <div style="display:flex;justify-content:space-between"><span>Next charge</span><span style="font-weight:600;color:var(--text)">$149.00</span></div>
     </div>
   </div>
-
-  <!-- PHONE SIM -->
-  <div class="screen" id="screen-phonesim">
-    <div class="pg-title" data-en="Phone Simulator" data-es="Simulador de Llamadas">Phone Simulator</div>
-    <div class="pg-sub" data-en="Practice reservation calls with an AI guest — scored in real time" data-es="Practica llamadas con un huésped de IA — puntuado en tiempo real">Practice reservation calls with an AI guest</div>
-    <div class="card" style="background:#f0fdf4;border-color:#bbf7d0;text-align:center;padding:28px">
-      <div style="font-size:40px;color:var(--green);margin-bottom:12px"><i class="ti ti-phone-call" aria-hidden="true"></i></div>
-      <div style="font-size:16px;font-weight:700;color:var(--green);margin-bottom:6px" data-en="YOLO Fort Lauderdale — Incoming Call" data-es="YOLO Fort Lauderdale — Llamada Entrante">YOLO Fort Lauderdale — Incoming Call</div>
-      <div style="font-size:13px;color:#16a34a;margin-bottom:20px" data-en="The AI guest calls to make a reservation. Fill the form as you gather details. Scored on 7 criteria. Voice-enabled." data-es="El huésped de IA llama para hacer una reservación. Llena el formulario. Puntuado en 7 criterios. Voz activada.">The AI guest calls to make a reservation. Fill the form as you gather details. Scored on 7 criteria. Voice-enabled.</div>
-      <button class="btn btn-green" style="margin:0 auto" onclick="sendPrompt('Launch the Verishift FloorPass AI phone reservation simulator for YOLO Fort Lauderdale with voice enabled — Martinez party scenario')"><i class="ti ti-player-play" style="font-size:18px"></i> <span data-en="Start Call Simulation" data-es="Iniciar Simulación">Start Call Simulation</span></button>
-    </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-list-check"></i><span data-en="What you're scored on" data-es="En qué eres evaluado">What you're scored on</span></div>
-      <div class="mod-list">
-        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="Proper greeting — say YOLO by name" data-es="Saludo correcto — mencionar YOLO">Proper greeting</div></div><span style="font-size:12px;color:var(--green);font-weight:700">+15 pts</span></div>
-        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="Capture guest name" data-es="Obtener nombre del huésped">Capture guest name</div></div><span style="font-size:12px;color:var(--green);font-weight:700">+10 pts</span></div>
-        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="Confirm party size" data-es="Confirmar tamaño del grupo">Confirm party size</div></div><span style="font-size:12px;color:var(--green);font-weight:700">+10 pts</span></div>
-        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="Date and time confirmed" data-es="Fecha y hora confirmadas">Date and time confirmed</div></div><span style="font-size:12px;color:var(--green);font-weight:700">+15 pts</span></div>
-        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="Callback number captured" data-es="Número de devolución obtenido">Callback number captured</div></div><span style="font-size:12px;color:var(--green);font-weight:700">+15 pts</span></div>
-        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="Asked about dietary needs / occasion" data-es="Preguntó sobre necesidades / ocasión">Asked about special needs</div></div><span style="font-size:12px;color:var(--green);font-weight:700">+15 pts</span></div>
-        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="Repeated reservation back to confirm" data-es="Repitió la reservación para confirmar">Confirmed reservation back</div></div><span style="font-size:12px;color:var(--green);font-weight:700">+20 pts</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- FLOOR SIM -->
-  <div class="screen" id="screen-floorsim">
-    <div class="pg-title" data-en="Floor Simulator" data-es="Simulador de Piso">Floor Simulator</div>
-    <div class="pg-sub" data-en="Practice seating guests on the YOLO Fort Lauderdale floor plan" data-es="Practica sentar clientes en el plano de YOLO">Practice seating guests on the YOLO Fort Lauderdale floor plan</div>
-    <div class="card" style="background:#eff6ff;border-color:#bfdbfe;text-align:center;padding:28px">
-      <div style="font-size:40px;color:var(--blue);margin-bottom:12px"><i class="ti ti-device-desktop" aria-hidden="true"></i></div>
-      <div style="font-size:16px;font-weight:700;color:var(--blue);margin-bottom:6px" data-en="YOLO Fort Lauderdale — Interactive Floor Plan" data-es="YOLO Fort Lauderdale — Plano Interactivo">YOLO Fort Lauderdale — Interactive Floor Plan</div>
-      <div style="font-size:13px;color:#1e40af;margin-bottom:20px" data-en="5 zones · 50+ tables · 3 scenarios available including fully booked night" data-es="5 zonas · 50+ mesas · 3 escenarios incluyendo noche llena">5 zones · 50+ tables · 3 scenarios including fully booked night</div>
-      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-        <button class="btn btn-blue" onclick="sendPrompt('Open Verishift FloorPass YOLO floor plan simulator Scenario 2 — Martinez party seating')"><i class="ti ti-player-play"></i> <span data-en="Scenario 2 — Seating" data-es="Escenario 2 — Sentar">Scenario 2 — Seating</span></button>
-        <button class="btn btn-outline" onclick="sendPrompt('Open Verishift FloorPass YOLO floor plan simulator Scenario 3 — fully booked night waitlist')"><i class="ti ti-list"></i> <span data-en="Scenario 3 — Full House" data-es="Escenario 3 — Lleno">Scenario 3 — Full House</span></button>
-      </div>
-    </div>
-  </div>
-
-  <!-- FLASHCARDS -->
-  <div class="screen" id="screen-flashcards">
-    <div class="pg-title" data-en="Flashcards" data-es="Tarjetas de Estudio">Flashcards</div>
-    <div class="pg-sub" data-en="YOLO Fort Lauderdale — food & drink menu" data-es="YOLO Fort Lauderdale — menú de comida y bebidas">YOLO Fort Lauderdale — food & drink menu</div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-cards" style="color:var(--cyan)"></i>
-        <span data-en="Cocktail Flashcards — tap to flip" data-es="Tarjetas de Cócteles — toca para voltear">Cocktail Flashcards — tap to flip</span>
-        <span style="margin-left:auto;font-size:12px;color:var(--text2)" id="fcDeckLabel">1 / 6</span>
-      </div>
-      <div class="fc-wrap">
-        <div class="fc" id="fc" onclick="flipCard()">
-          <div class="fc-front" id="fc-front"></div>
-          <div class="fc-back" id="fc-back"></div>
-          <div class="fc-hint" data-en="tap to flip" data-es="toca para voltear">tap to flip</div>
-        </div>
-        <div class="fc-nav">
-          <button class="fc-btn" onclick="prevCard()"><i class="ti ti-arrow-left"></i></button>
-          <span style="font-size:13px;color:var(--text2);font-weight:600" id="fcCount">1 / 6</span>
-          <button class="fc-btn" onclick="nextCard()"><i class="ti ti-arrow-right"></i></button>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-stack-2"></i><span data-en="All decks" data-es="Todos los mazos">All decks</span></div>
-      <div class="mod-list">
-        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="Food menu — starters & mains" data-es="Menú — entradas y platos">Food menu — starters & mains</div><div class="mod-meta" data-en="24 cards · Completed" data-es="24 tarjetas · Completado">24 cards · Completed</div></div><span class="pill pill-green" data-en="Done ✓" data-es="Listo ✓">Done ✓</span></div>
-        <div class="mod-row"><div class="mod-icon mi-amber"><i class="ti ti-cards"></i></div><div class="mod-info"><div class="mod-name" data-en="Cocktails & wine list" data-es="Cócteles y lista de vinos">Cocktails & wine list</div><div class="mod-meta">18 cards</div></div><span class="pill pill-amber">12/18</span></div>
-        <div class="mod-row" style="opacity:0.5"><div class="mod-icon mi-red"><i class="ti ti-lock"></i></div><div class="mod-info"><div class="mod-name" data-en="Allergens & dietary guide" data-es="Guía de alérgenos">Allergens & dietary guide</div></div><span class="pill pill-gray" data-en="Locked" data-es="Bloqueado">Locked</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- QUIZZES -->
-  <div class="screen" id="screen-quizzes">
-    <div class="pg-title" data-en="Quizzes" data-es="Exámenes">Quizzes</div>
-    <div class="pg-sub" data-en="Score 80%+ to pass and unlock the next module" data-es="Obtén 80%+ para aprobar">Score 80%+ to pass</div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-help-circle" style="color:#f59e0b"></i><span data-en="Available Quizzes" data-es="Exámenes Disponibles">Available Quizzes</span></div>
-      <div class="mod-list">
-        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="L1 Quiz 1 — OpenTable Basics" data-es="N1 Examen 1 — Básicos">L1 Quiz 1 — OpenTable Basics</div><div class="mod-meta" data-en="Score: 90%" data-es="Puntuación: 90%">Score: 90%</div></div><span class="pill pill-green" data-en="Passed" data-es="Aprobado">Passed</span></div>
-        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="L1 Quiz 2 — Menu Knowledge" data-es="N1 Examen 2 — Menú">L1 Quiz 2 — Menu Knowledge</div><div class="mod-meta" data-en="Score: 87%" data-es="Puntuación: 87%">Score: 87%</div></div><span class="pill pill-green" data-en="Passed" data-es="Aprobado">Passed</span></div>
-        <div class="mod-row"><div class="mod-icon mi-blue"><i class="ti ti-player-play"></i></div><div class="mod-info"><div class="mod-name" data-en="L1 Quiz 3 — Reservations & Scenarios" data-es="N1 Examen 3 — Reservaciones">L1 Quiz 3 — Reservations & Scenarios</div><div class="mod-meta" data-en="Must score 80%+" data-es="Debes obtener 80%+">Must score 80%+</div></div><span class="pill pill-blue" data-en="Take Quiz" data-es="Tomar Examen">Take Quiz</span></div>
-        <div class="mod-row" style="opacity:0.5"><div class="mod-icon mi-gray"><i class="ti ti-lock"></i></div><div class="mod-info"><div class="mod-name" data-en="L2 Quiz 1 — Advanced Floor" data-es="N2 Examen 1 — Avanzado">L2 Quiz 1 — Advanced Floor</div></div><span class="pill pill-gray" data-en="Locked" data-es="Bloqueado">Locked</span></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- STAFF PROGRESS -->
-  <div class="screen" id="screen-staff">
-    <div class="pg-title" data-en="Staff Progress" data-es="Progreso del Personal">Staff Progress</div>
-    <div class="pg-sub" data-en="YOLO Fort Lauderdale · All employees · May 2026" data-es="YOLO Fort Lauderdale · Todo el personal · Mayo 2026">YOLO Fort Lauderdale · All employees · May 2026</div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-label" data-en="Total Staff" data-es="Personal Total">Total Staff</div><div class="stat-value">12</div></div>
-      <div class="stat-card"><div class="stat-label" data-en="Certified" data-es="Certificados">Certified</div><div class="stat-value" style="color:var(--green)">4</div></div>
-      <div class="stat-card"><div class="stat-label" data-en="In Training" data-es="En Entrenamiento">In Training</div><div class="stat-value" style="color:var(--blue)">7</div></div>
-      <div class="stat-card"><div class="stat-label" data-en="Not Started" data-es="No Iniciado">Not Started</div><div class="stat-value" style="color:var(--red)">1</div></div>
-    </div>
+  <div class="card">
+    <div class="card-title"><i class="ti ti-arrows-exchange"></i>Upgrade Plan</div>
     <div class="btn-row">
-      <button class="btn btn-primary"><i class="ti ti-download"></i><span data-en="Export Report" data-es="Exportar Reporte">Export Report</span></button>
-      <button class="btn btn-outline"><i class="ti ti-mail"></i><span data-en="Send Reminders" data-es="Enviar Recordatorios">Send Reminders</span></button>
-      <button class="btn btn-outline"><i class="ti ti-user-plus"></i><span data-en="Add Employee" data-es="Agregar Empleado">Add Employee</span></button>
-    </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-users"></i><span data-en="Team Overview" data-es="Resumen del Equipo">Team Overview</span></div>
-      <div style="overflow-x:auto">
-        <table class="staff-table">
-          <thead><tr><th data-en="Employee" data-es="Empleado">Employee</th><th data-en="Role" data-es="Rol">Role</th><th data-en="Level" data-es="Nivel">Level</th><th data-en="Progress" data-es="Progreso">Progress</th><th data-en="Quiz" data-es="Examen">Quiz</th><th data-en="Call" data-es="Llamada">Call</th><th data-en="Status" data-es="Estado">Status</th></tr></thead>
-          <tbody>
-            <tr><td><strong>Sarah J.</strong></td><td>Host</td><td>L1</td><td><div class="prog-mini"><div class="prog-mini-fill" style="width:42%"></div></div>42%</td><td>87%</td><td>90</td><td><span class="pill pill-amber" data-en="Active" data-es="Activo">Active</span></td></tr>
-            <tr><td><strong>Marcus R.</strong></td><td>Host</td><td>L2</td><td><div class="prog-mini"><div class="prog-mini-fill" style="width:78%"></div></div>78%</td><td>91%</td><td>95</td><td><span class="pill pill-blue">L2</span></td></tr>
-            <tr><td><strong>Aisha T.</strong></td><td>Server</td><td>L1</td><td><div class="prog-mini"><div class="prog-mini-fill" style="width:100%"></div></div>100%</td><td>94%</td><td>98</td><td><span class="pill pill-green" data-en="Certified" data-es="Certificado">Certified</span></td></tr>
-            <tr><td><strong>Jake M.</strong></td><td>Host</td><td>L1</td><td><div class="prog-mini"><div class="prog-mini-fill" style="width:65%"></div></div>65%</td><td>82%</td><td>74</td><td><span class="pill pill-amber" data-en="Active" data-es="Activo">Active</span></td></tr>
-            <tr><td><strong>Priya P.</strong></td><td>Server</td><td>L3</td><td><div class="prog-mini"><div class="prog-mini-fill" style="width:90%"></div></div>90%</td><td>96%</td><td>100</td><td><span class="pill pill-green">L3</span></td></tr>
-            <tr><td><strong>Tyler B.</strong></td><td>Host</td><td>—</td><td><div class="prog-mini"><div class="prog-mini-fill" style="width:0%"></div></div>0%</td><td>—</td><td>—</td><td><span class="pill pill-red" data-en="Not started" data-es="No iniciado">Not started</span></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <button class="btn btn-outline" onclick="openCheckout('starter')">Switch to Starter — $99/mo</button>
+      <button class="btn btn-outline" onclick="openCheckout('group')">Upgrade to Group — $349/mo</button>
     </div>
   </div>
-
-  <!-- ANALYTICS -->
-  <div class="screen" id="screen-analytics">
-    <div class="pg-title" data-en="Analytics" data-es="Análisis">Analytics</div>
-    <div class="pg-sub" data-en="Team performance · May 2026" data-es="Rendimiento del equipo · Mayo 2026">Team performance · May 2026</div>
-    <div class="stats-grid">
-      <div class="stat-card"><div class="stat-label" data-en="Avg Quiz Score" data-es="Promedio Exámenes">Avg Quiz Score</div><div class="stat-value">88%</div><div class="stat-sub" data-en="Up 3% this week" data-es="Subió 3% esta semana">Up 3% this week</div></div>
-      <div class="stat-card"><div class="stat-label" data-en="Avg Call Score" data-es="Promedio Llamadas">Avg Call Score</div><div class="stat-value">84</div><div class="stat-sub" data-en="18 calls total" data-es="18 llamadas total">18 calls total</div></div>
-      <div class="stat-card"><div class="stat-label" data-en="L1 Completion" data-es="Completado N1">L1 Completion</div><div class="stat-value">67%</div></div>
-      <div class="stat-card"><div class="stat-label" data-en="Days to Certify" data-es="Días Certificar">Days to Certify</div><div class="stat-value">4.2</div></div>
-    </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-chart-bar" style="color:var(--blue)"></i><span data-en="Quiz Scores by Employee" data-es="Puntuaciones por Empleado">Quiz Scores by Employee</span></div>
-      <div class="bar-chart">
-        <div class="bar-row"><div class="bar-label">Priya P.</div><div class="bar-track"><div class="bar-fill" style="width:96%;background:#22c55e"></div></div><div class="bar-val">96%</div></div>
-        <div class="bar-row"><div class="bar-label">Aisha T.</div><div class="bar-track"><div class="bar-fill" style="width:94%;background:#22c55e"></div></div><div class="bar-val">94%</div></div>
-        <div class="bar-row"><div class="bar-label">Marcus R.</div><div class="bar-track"><div class="bar-fill" style="width:91%;background:#22c55e"></div></div><div class="bar-val">91%</div></div>
-        <div class="bar-row"><div class="bar-label">Sarah J.</div><div class="bar-track"><div class="bar-fill" style="width:87%;background:#22c55e"></div></div><div class="bar-val">87%</div></div>
-        <div class="bar-row"><div class="bar-label">Jake M.</div><div class="bar-track"><div class="bar-fill" style="width:82%;background:#f59e0b"></div></div><div class="bar-val">82%</div></div>
-        <div class="bar-row"><div class="bar-label">Tyler B.</div><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><div class="bar-val">—</div></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-phone" style="color:var(--cyan)"></i><span data-en="Most Missed Call Criteria" data-es="Criterios Más Olvidados">Most Missed Call Criteria</span></div>
-      <div class="bar-chart">
-        <div class="bar-row"><div class="bar-label" data-en="Callback #" data-es="# Devolución">Callback #</div><div class="bar-track"><div class="bar-fill" style="width:42%;background:var(--red)"></div></div><div class="bar-val">42%</div></div>
-        <div class="bar-row"><div class="bar-label" data-en="Repeat back" data-es="Repetir">Repeat back</div><div class="bar-track"><div class="bar-fill" style="width:35%;background:#f59e0b"></div></div><div class="bar-val">35%</div></div>
-        <div class="bar-row"><div class="bar-label" data-en="Special needs" data-es="Necesidades">Special needs</div><div class="bar-track"><div class="bar-fill" style="width:28%;background:#f59e0b"></div></div><div class="bar-val">28%</div></div>
-        <div class="bar-row"><div class="bar-label" data-en="Greeting" data-es="Saludo">Greeting</div><div class="bar-track"><div class="bar-fill" style="width:12%;background:#22c55e"></div></div><div class="bar-val">12%</div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ALERTS -->
-  <div class="screen" id="screen-alerts">
-    <div class="pg-title" data-en="Alerts" data-es="Alertas">Alerts</div>
-    <div class="pg-sub" data-en="3 items need your attention" data-es="3 elementos necesitan tu atención">3 items need your attention</div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-bell" style="color:var(--red)"></i><span data-en="Action Required" data-es="Acción Requerida">Action Required</span></div>
-      <div class="alert-item" style="background:#fef2f2;border:1px solid #fecaca">
-        <div class="alert-dot" style="background:var(--red)"></div>
-        <div><div class="alert-title" data-en="Tyler Brooks — Not started" data-es="Tyler Brooks — No iniciado">Tyler Brooks — Not started</div><div class="alert-desc" data-en="Hired 6 days ago. Zero modules completed." data-es="Contratado hace 6 días. Sin módulos completados.">Hired 6 days ago. Zero modules completed.</div><button class="btn btn-danger" style="margin-top:10px;font-size:12px;padding:8px 14px" data-en="Send Reminder" data-es="Enviar Recordatorio">Send Reminder</button></div>
-      </div>
-      <div class="alert-item" style="background:#fffbeb;border:1px solid #fde68a">
-        <div class="alert-dot" style="background:#f59e0b"></div>
-        <div><div class="alert-title" data-en="Destiny Cruz — Low call score (68)" data-es="Destiny Cruz — Puntuación baja (68)">Destiny Cruz — Low call score (68)</div><div class="alert-desc" data-en="Below 80% threshold. Recommend a coaching session." data-es="Por debajo del 80%. Recomendar sesión de entrenamiento.">Below 80% threshold. Recommend coaching.</div></div>
-      </div>
-      <div class="alert-item" style="background:#fffbeb;border:1px solid #fde68a">
-        <div class="alert-dot" style="background:#f59e0b"></div>
-        <div><div class="alert-title" data-en="Jake Moreno — Inactive 2 days" data-es="Jake Moreno — Inactivo 2 días">Jake Moreno — Inactive 2 days</div><div class="alert-desc" data-en="Level 1 still at 65%. Last active May 11." data-es="Nivel 1 al 65%. Última actividad May 11.">Level 1 still at 65%. Last active May 11.</div></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-check" style="color:var(--green)"></i><span data-en="Recent Wins" data-es="Logros Recientes">Recent Wins</span></div>
-      <div class="alert-item" style="background:#f0fdf4;border:1px solid #bbf7d0">
-        <div class="alert-dot" style="background:var(--green)"></div>
-        <div><div class="alert-title">Aisha Thompson — Level 1 Certified</div><div class="alert-desc" data-en="Completed with a 94% quiz average. May 12." data-es="Completado con promedio de 94%. May 12.">Completed with a 94% quiz average. May 12.</div></div>
-      </div>
-      <div class="alert-item" style="background:#f0fdf4;border:1px solid #bbf7d0">
-        <div class="alert-dot" style="background:var(--green)"></div>
-        <div><div class="alert-title">Priya Patel — Perfect call score (100)</div><div class="alert-desc" data-en="Scored 100 on phone simulation. May 11." data-es="Puntuación de 100 en simulación. May 11.">Scored 100 on phone simulation. May 11.</div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- REPORTS -->
-  <div class="screen" id="screen-reports">
-    <div class="pg-title" data-en="Reports" data-es="Reportes">Reports</div>
-    <div class="pg-sub" data-en="Export training data for ownership review" data-es="Exportar datos de entrenamiento">Export training data for ownership review</div>
-    <div class="btn-row">
-      <button class="btn btn-primary"><i class="ti ti-download"></i><span data-en="Export PDF" data-es="Exportar PDF">Export PDF</span></button>
-      <button class="btn btn-outline"><i class="ti ti-file-spreadsheet"></i><span data-en="Export Excel" data-es="Exportar Excel">Export Excel</span></button>
-      <button class="btn btn-outline"><i class="ti ti-mail"></i><span data-en="Email to Owner" data-es="Enviar al Dueño">Email to Owner</span></button>
-    </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-file-text"></i><span data-en="May 2026 — Training Summary" data-es="Mayo 2026 — Resumen de Entrenamiento">May 2026 — Training Summary</span></div>
-      <div style="overflow-x:auto">
-        <table class="staff-table">
-          <thead><tr><th data-en="Employee" data-es="Empleado">Employee</th><th>Level</th><th data-en="Modules" data-es="Módulos">Modules</th><th data-en="Quiz avg" data-es="Prom. Examen">Quiz avg</th><th data-en="Call avg" data-es="Prom. Llamada">Call avg</th><th data-en="Certified" data-es="Certificado">Certified</th></tr></thead>
-          <tbody>
-            <tr><td>Priya Patel</td><td>L3</td><td>13/14</td><td>96%</td><td>100</td><td><span class="pill pill-green" data-en="Yes" data-es="Sí">Yes</span></td></tr>
-            <tr><td>Aisha Thompson</td><td>L1</td><td>14/14</td><td>94%</td><td>98</td><td><span class="pill pill-green" data-en="Yes" data-es="Sí">Yes</span></td></tr>
-            <tr><td>Marcus Rivera</td><td>L2</td><td>11/14</td><td>91%</td><td>95</td><td><span class="pill pill-green" data-en="Yes" data-es="Sí">Yes</span></td></tr>
-            <tr><td>Sarah Johnson</td><td>L1</td><td>6/14</td><td>87%</td><td>90</td><td><span class="pill pill-amber" data-en="In progress" data-es="En progreso">In progress</span></td></tr>
-            <tr><td>Jake Moreno</td><td>L1</td><td>9/14</td><td>82%</td><td>74</td><td><span class="pill pill-amber" data-en="In progress" data-es="En progreso">In progress</span></td></tr>
-            <tr><td>Tyler Brooks</td><td>—</td><td>0/14</td><td>—</td><td>—</td><td><span class="pill pill-red" data-en="Not started" data-es="No iniciado">Not started</span></td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- SETTINGS -->
-  <div class="screen" id="screen-settings">
-    <div class="pg-title" data-en="Settings" data-es="Configuración">Settings</div>
-    <div class="pg-sub" data-en="Configure FloorPass for your restaurant" data-es="Configura FloorPass para tu restaurante">Configure FloorPass for your restaurant</div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-building"></i><span data-en="Restaurant Profile" data-es="Perfil del Restaurante">Restaurant Profile</span></div>
-      <div class="field"><label data-en="Restaurant name" data-es="Nombre del restaurante">Restaurant name</label><input type="text" value="YOLO Fort Lauderdale"/></div>
-      <div class="field"><label data-en="Reservation system" data-es="Sistema de reservaciones">Reservation system</label><select><option>OpenTable</option><option>Resy</option><option>SevenRooms</option><option>Tock</option></select></div>
-      <div class="field"><label data-en="Manager email" data-es="Correo del gerente">Manager email</label><input type="email" value="manager@yolofl.com"/></div>
-      <div class="field"><label data-en="Default language" data-es="Idioma predeterminado">Default language</label>
-        <select onchange="setLang(this.value)"><option value="en">English</option><option value="es">Español</option></select>
-      </div>
-      <div class="field"><label data-en="Pass score threshold" data-es="Umbral de aprobación">Pass score threshold</label><select><option>80%</option><option>75%</option><option>85%</option><option>90%</option></select></div>
-      <button class="btn btn-primary" style="margin-top:6px"><i class="ti ti-check"></i><span data-en="Save Settings" data-es="Guardar">Save Settings</span></button>
-    </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-upload"></i><span data-en="Content Uploads" data-es="Subir Contenido">Content Uploads</span></div>
-      <div class="mod-list">
-        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="Food & drink menu" data-es="Menú de comida y bebidas">Food & drink menu</div><div class="mod-meta" data-en="42 items · May 2026" data-es="42 artículos · Mayo 2026">42 items · May 2026</div></div><button class="btn btn-outline" style="font-size:12px;padding:8px 12px" data-en="Replace" data-es="Reemplazar">Replace</button></div>
-        <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="Floor plan — YOLO" data-es="Plano — YOLO">Floor plan — YOLO</div><div class="mod-meta" data-en="5 zones · 50+ tables" data-es="5 zonas · 50+ mesas">5 zones · 50+ tables</div></div><button class="btn btn-outline" style="font-size:12px;padding:8px 12px" data-en="Update" data-es="Actualizar">Update</button></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BILLING -->
-  <div class="screen" id="screen-billing">
-    <div class="pg-title" data-en="Billing" data-es="Facturación">Billing</div>
-    <div class="pg-sub" data-en="Manage your Verishift subscription" data-es="Administra tu suscripción de Verishift">Manage your Verishift subscription</div>
-    <div class="card" style="background:#eff6ff;border-color:#bfdbfe">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-        <div><div style="font-size:16px;font-weight:700;color:var(--text)" data-en="FloorPass Custom" data-es="FloorPass Personalizado">FloorPass Custom</div><div style="font-size:13px;color:var(--text2)" data-en="$149/month · Trial active" data-es="$149/mes · Prueba activa">$149/month · Trial active</div></div>
-        <span class="pill pill-green" data-en="Active" data-es="Activo">Active</span>
-      </div>
-      <div style="background:#fff;border-radius:10px;padding:14px;font-size:13px;color:var(--text2)">
-        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span data-en="Trial ends" data-es="Prueba termina">Trial ends</span><span style="font-weight:600;color:var(--text)">May 28, 2026</span></div>
-        <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span data-en="Next charge" data-es="Próximo cargo">Next charge</span><span style="font-weight:600;color:var(--text)">$149.00</span></div>
-        <div style="display:flex;justify-content:space-between"><span data-en="Payment method" data-es="Método de pago">Payment method</span><span style="font-weight:600;color:var(--text)">Visa ••••4242</span></div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title"><i class="ti ti-arrows-exchange"></i><span data-en="Change Plan" data-es="Cambiar Plan">Change Plan</span></div>
-      <div class="pricing-grid">
-        <div class="plan-card" onclick="openCheckout('starter')">
-          <div class="plan-name">Starter</div>
-          <div class="plan-price">$99<span>/mo</span></div>
-          <div class="plan-desc" data-en="Up to 15 staff" data-es="Hasta 15 empleados">Up to 15 staff</div>
-          <div class="plan-features">
-            <div class="pf"><i class="ti ti-check"></i><span data-en="OpenTable simulator" data-es="Simulador OpenTable">OpenTable simulator</span></div>
-            <div class="pf"><i class="ti ti-check"></i><span data-en="AI phone calls" data-es="Llamadas IA">AI phone calls</span></div>
-            <div class="pf"><i class="ti ti-check"></i><span data-en="Menu flashcards" data-es="Tarjetas del menú">Menu flashcards</span></div>
-          </div>
-          <button class="plan-btn plan-btn-outline" data-en="Switch to Starter" data-es="Cambiar a Starter">Switch to Starter</button>
-        </div>
-        <div class="plan-card featured" onclick="openCheckout('custom')">
-          <div class="plan-badge" data-en="Current plan" data-es="Plan actual">Current plan</div>
-          <div class="plan-name">Custom</div>
-          <div class="plan-price">$149<span>/mo</span></div>
-          <div class="plan-desc" data-en="Unlimited staff" data-es="Personal ilimitado">Unlimited staff</div>
-          <div class="plan-features">
-            <div class="pf"><i class="ti ti-check"></i><span data-en="Everything in Starter" data-es="Todo en Starter">Everything in Starter</span></div>
-            <div class="pf"><i class="ti ti-check"></i><span data-en="Your floor plan" data-es="Tu plano">Your floor plan</span></div>
-            <div class="pf"><i class="ti ti-check"></i><span data-en="Custom menu upload" data-es="Subir menú">Custom menu upload</span></div>
-          </div>
-          <button class="plan-btn plan-btn-primary" data-en="Current plan ✓" data-es="Plan actual ✓">Current plan ✓</button>
-        </div>
-        <div class="plan-card" onclick="openCheckout('group')">
-          <div class="plan-name">Group</div>
-          <div class="plan-price">$349<span>/mo</span></div>
-          <div class="plan-desc" data-en="Up to 5 locations" data-es="Hasta 5 ubicaciones">Up to 5 locations</div>
-          <div class="plan-features">
-            <div class="pf"><i class="ti ti-check"></i><span data-en="Everything in Custom" data-es="Todo en Custom">Everything in Custom</span></div>
-            <div class="pf"><i class="ti ti-check"></i><span data-en="Multi-location dashboard" data-es="Panel multi-ubicación">Multi-location dashboard</span></div>
-            <div class="pf"><i class="ti ti-check"></i><span data-en="White-label option" data-es="Opción white-label">White-label option</span></div>
-          </div>
-          <button class="plan-btn plan-btn-outline" data-en="Upgrade to Group" data-es="Subir a Group">Upgrade to Group</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PROFILE -->
-  <div class="screen" id="screen-profile">
-    <div class="pg-title" data-en="My Profile" data-es="Mi Perfil">My Profile</div>
-    <div class="pg-sub" data-en="Training history and certifications" data-es="Historial y certificaciones">Training history and certifications</div>
-    <div class="card">
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px">
-        <div id="profileAv" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff">SJ</div>
-        <div><div style="font-size:17px;font-weight:700" id="profileName">Sarah Johnson</div><div style="font-size:13px;color:var(--text2)" id="profileRole">Host · YOLO Fort Lauderdale</div><div style="font-size:11px;color:var(--text3)" id="profileEmail">sarah@yolofl.com</div></div>
-      </div>
-      <div style="border-top:1px solid var(--border);padding-top:14px">
-        <div class="card-title"><i class="ti ti-trophy" style="color:#f59e0b"></i><span data-en="Certifications" data-es="Certificaciones">Certifications</span></div>
-        <div style="font-size:13px;color:var(--text2);padding:8px 0" data-en="Complete Level 1 to earn your FloorPass Foundations certificate." data-es="Completa el Nivel 1 para obtener tu certificado FloorPass Fundamentos.">Complete Level 1 to earn your FloorPass Foundations certificate.</div>
-      </div>
-      <div style="border-top:1px solid var(--border);padding-top:14px;margin-top:10px">
-        <div class="card-title"><i class="ti ti-history"></i><span data-en="Recent Activity" data-es="Actividad Reciente">Recent Activity</span></div>
-        <div class="mod-list">
-          <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="Phone simulation — Score: 90" data-es="Simulación — Puntuación: 90">Phone simulation — Score: 90</div><div class="mod-meta">May 12 · 3:42 min</div></div></div>
-          <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="L1 Quiz 2 — Score: 87%" data-es="N1 Examen 2 — 87%">L1 Quiz 2 — Score: 87%</div><div class="mod-meta">May 11</div></div></div>
-          <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name" data-en="Food menu flashcards — completed" data-es="Tarjetas del menú — completadas">Food menu flashcards — completed</div><div class="mod-meta">May 10</div></div></div>
-        </div>
-      </div>
-    </div>
-  </div>
+</div>
 
 </div>
 </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════
-// ⚠️  PASTE YOUR KEYS HERE — REPLACE THE PLACEHOLDERS
-// ═══════════════════════════════════════════════════
+// ══════════════════════════════════════════════
+// PASTE YOUR KEYS HERE
+// ══════════════════════════════════════════════
 const CONFIG = {
-  SUPABASE_URL: 'PASTE_YOUR_SUPABASE_URL_HERE',
-  SUPABASE_ANON_KEY: 'PASTE_YOUR_SUPABASE_ANON_KEY_HERE',
-  STRIPE_PUBLISHABLE_KEY: 'PASTE_YOUR_STRIPE_PUBLISHABLE_KEY_HERE',
-  STRIPE_PRICES: {
-    starter: 'price_1TX6ETDFHqQbeMA2lKGNVBE7',
-    custom:  'price_1TX6FCDFHqQbeMA2r6qgYXCP',
-    group:   'price_1TX6FVDFHqQbeMA2fV2dYX3k'
-  },
+  SUPABASE_URL: 'https://xarqooyyxuoepngickuz.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcnFvb3l5eHVvZXBuZ2lja3V6Iiwicm9sZSI6ImFub24iLCJpYXQiOj',
+  STRIPE_PRICES: { starter:'price_1TX6ETDFHqQbeMA2lKGNVBE7', custom:'price_1TX6FCDFHqQbeMA2r6qgYXCP', group:'price_1TX6FVDFHqQbeMA2fV2dYX3k' },
   PLAN_NAMES: { starter:'FloorPass Starter', custom:'FloorPass Custom', group:'FloorPass Group' },
   PLAN_PRICES: { starter:'$99/mo', custom:'$149/mo', group:'$349/mo' }
 };
-// ═══════════════════════════════════════════════════
-
-// Payment Links
 const PAYMENT_LINKS = {
   starter: 'https://buy.stripe.com/00wbJ1g5Cce92rNfhr3Ru03',
   custom:  'https://buy.stripe.com/9B66oH8Da7XT2rNfhr3Ru02',
   group:   'https://buy.stripe.com/9B64gz4mU91X1nJ0mx3Ru04'
 };
+// ══════════════════════════════════════════════
 
-// Init Supabase + Stripe
 let supabaseClient = null;
-let stripe = null;
+try { supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY); } catch(e) { console.log('Demo mode'); }
 
-// ── STATE ──
-let currentLang = 'en';
-let currentRole = 'employee';
-let currentUser = null;
-let fcIdx = 0;
-let fcFlipped = false;
-let checkoutPlan = 'custom';
+let currentLang='en', currentRole='employee', currentUser=null, checkoutPlan='custom';
+let fcIdx=0, fcFlipped=false, currentDeck='drinks';
 
-const fcCards = [
-  {en:{f:"What is the YOLO Mule?",b:"House-infused vodka, ginger beer, fresh lime, cucumber. $14 — most popular cocktail."},
-   es:{f:"¿Qué es el YOLO Mule?",b:"Vodka infusionado, cerveza de jengibre, lima fresca, pepino. $14 — el cóctel más popular."}},
-  {en:{f:"Name two signature cocktails.",b:"1. YOLO Mule $14  2. Las Olas Lemonade — vodka, elderflower, fresh lemon, prosecco. $13"},
-   es:{f:"Nombra dos cócteles de la casa.",b:"1. YOLO Mule $14  2. Las Olas Lemonade — vodka, flor de saúco, limón fresco, prosecco. $13"}},
-  {en:{f:"What are happy hour hours?",b:"Mon-Fri 3-7 PM at bar and fire pit only. $8 cocktails, $5 drafts, half-price apps."},
-   es:{f:"¿Cuáles son los horarios de happy hour?",b:"Lun-Vie 3-7 PM solo en la barra y fogata. $8 cócteles, $5 cervezas, aperitivos a mitad de precio."}},
-  {en:{f:"What whiskey cocktail is on the menu?",b:"Old Fashioned YOLO — Knob Creek, house bitters, orange zest. $15. Smoked tableside."},
-   es:{f:"¿Qué cóctel de whiskey está en el menú?",b:"Old Fashioned YOLO — Knob Creek, bitters de la casa, ralladura de naranja. $15. Ahumado en la mesa."}},
-  {en:{f:"What wine is available by the glass?",b:"Whispering Angel rosé $16, Caymus Cabernet $18, Cakebread Chardonnay $16."},
-   es:{f:"¿Qué vinos se sirven por copa?",b:"Whispering Angel rosé $16, Caymus Cabernet $18, Cakebread Chardonnay $16."}},
-  {en:{f:"Name a non-alcoholic option.",b:"Las Olas Sparkler — fresh citrus, house syrup, sparkling water. $7. Always mention to guests."},
-   es:{f:"Nombra una opción sin alcohol.",b:"Las Olas Sparkler — cítricos frescos, jarabe de la casa, agua con gas. $7. Siempre mencionarlo."}}
+// FLASHCARD DATA
+const fcDecks = {
+  drinks:[
+    {f:"What is the YOLO Mule?",b:"House-infused vodka, ginger beer, fresh lime, cucumber. $14 — most popular cocktail."},
+    {f:"Name two signature cocktails.",b:"1. YOLO Mule $14  2. Las Olas Lemonade — vodka, elderflower, lemon, prosecco. $13"},
+    {f:"What are happy hour hours?",b:"Mon–Fri 3–7 PM at bar & fire pit only. $8 cocktails, $5 drafts, half-price apps."},
+    {f:"What whiskey cocktail is on the menu?",b:"Old Fashioned YOLO — Knob Creek, house bitters, orange zest. $15. Smoked tableside."},
+    {f:"What wine is available by the glass?",b:"Whispering Angel rosé $16, Caymus Cabernet $18, Cakebread Chardonnay $16."},
+    {f:"Name a non-alcoholic option.",b:"Las Olas Sparkler — fresh citrus, house syrup, sparkling water. $7."},
+    {f:"What is the signature martini?",b:"YOLO Dirty Martini — Grey Goose, olive brine, blue cheese stuffed olives. $16."},
+    {f:"What champagne is available?",b:"Moët & Chandon by the glass $18, Veuve Clicquot bottle $95."},
+    {f:"What is the YOLO Sangria?",b:"Red wine, brandy, fresh citrus, seasonal fruit. $12 glass / $38 pitcher."},
+    {f:"Name a popular beer option.",b:"Taps rotate. Always include local Florida craft options and domestic staples. Ask server."}
+  ],
+  food:[
+    {f:"What is the YOLO Wagyu Burger?",b:"8oz wagyu beef, truffle aioli, aged cheddar, brioche bun. $28. Most popular entrée."},
+    {f:"Name two vegetarian entrées.",b:"1. Roasted Cauliflower Steak $22 — chimichurri, quinoa. 2. Wild Mushroom Risotto $24 — truffle oil, parmesan."},
+    {f:"What does 86'd mean?",b:"The item is sold out or unavailable. Always inform guests BEFORE they order."},
+    {f:"Name a popular starter.",b:"Tuna Tartare $18 — avocado, sesame, wonton chips. Truffle Fries $12 — parmesan, truffle aioli."},
+    {f:"What seafood options are on the menu?",b:"Pan Seared Salmon $32 — lemon butter, asparagus. Shrimp & Grits $28 — andouille, stone ground grits."},
+    {f:"What to do when a guest has a nut allergy?",b:"Flag the table, inform the kitchen, use OpenTable allergy note field, verify every dish before service."},
+    {f:"What is the prix fixe menu?",b:"3-course menu Thursday–Sunday. $65 per person. Ask manager for current selections."},
+    {f:"Name a steak option.",b:"12oz NY Strip $48 — herb butter, roasted garlic, choice of side."},
+    {f:"What desserts are available?",b:"Warm Chocolate Lava Cake $12, Key Lime Pie $10, Seasonal Sorbet $8."},
+    {f:"Most common dietary restrictions to note?",b:"Gluten-free, nut allergy, vegan, shellfish allergy. Always ask and mark in OpenTable. Inform kitchen immediately."}
+  ]
+};
+
+// QUIZ DATA
+const quizQ = [
+  {q:"A guest calls for a reservation. What is the FIRST thing you should say?",opts:["Sure, let me check availability","Thank you for calling YOLO Fort Lauderdale, how can I help you?","What's the name?","We might be fully booked"],correct:1,exp:"Always greet with the restaurant name first — it confirms the guest called the right place."},
+  {q:"You are fully booked at 8 PM. A walk-in party of 6 arrives. What do you do?",opts:["Turn them away","Add them to the waitlist and give an estimated wait time","Seat them at a reserved table","Tell them to try another restaurant"],correct:1,exp:"Always offer the waitlist. Get their name and phone number and give a realistic wait time estimate."},
+  {q:"A guest mentions it is their anniversary when reserving. What should you do?",opts:["Note it in OpenTable and tell the server","Ignore it","Ask them to call back closer to the date","Transfer to the manager"],correct:0,exp:"Always note special occasions in OpenTable. Flag for the server so they can make the experience special."},
+  {q:"Best table for a party of 4 requesting quiet INDOOR seating away from the bar?",opts:["Bar high-top","Patio table","Main dining room 4-top","O Lounge near DJ booth"],correct:2,exp:"Indoor, away from bar, 4-top — main dining room is the correct choice."},
+  {q:"A guest asks what '86'd' means. You explain:",opts:["The table is reserved","The item is sold out or unavailable","The kitchen is closed","It is a daily special"],correct:1,exp:"86'd means sold out or unavailable. Always inform guests before they order."},
+  {q:"When taking a phone reservation, what MUST you collect?",opts:["Name only","Name, party size, date, time, and phone number","Name and email only","Party size and credit card"],correct:1,exp:"The 5 essentials: name, party size, date, time, callback number. Plus ask about special occasions and dietary needs."},
+  {q:"The Martinez party reserved for 8:30 PM. It is 8:45 PM and they haven't arrived. What do you do?",opts:["Give the table away immediately","Wait 15 more minutes then call their number","Release the table immediately","Mark as no-show"],correct:1,exp:"Standard practice: wait 15 minutes past reservation time, then call. After 30 minutes, table can be released."},
+  {q:"A guest has a severe nut allergy. The correct procedure is:",opts:["Verbally tell the server","Note in OpenTable, inform kitchen, verify every dish before service","Ask guest to inform kitchen","Only mention if they order something with nuts"],correct:1,exp:"Nut allergies are life-threatening. Note in OpenTable, inform kitchen immediately, and verify every dish."},
+  {q:"What are YOLO's happy hour hours?",opts:["Daily 4-7 PM","Monday through Friday 3-7 PM at bar and fire pit only","Saturday and Sunday only","Monday through Friday 5-8 PM"],correct:1,exp:"Happy hour is Mon-Fri 3-7 PM, at the bar and fire pit area ONLY. First come, first served."},
+  {q:"A table is marked TURNING in the simulator. What does this mean?",opts:["The table is broken","Guests are finishing up — table will be available soon","The table is being cleaned","A reservation is being modified"],correct:1,exp:"TURNING means guests are wrapping up. Notify the next waitlist party and prepare to seat them."}
 ];
+let qIdx=0, qScore=0, qAnswers=[];
 
+// FLOOR DATA
+const floorTables = [
+  {id:'T1',cap:2,zone:'Main Dining',s:'available'},{id:'T2',cap:2,zone:'Main Dining',s:'seated'},
+  {id:'T3',cap:4,zone:'Main Dining',s:'available'},{id:'T4',cap:4,zone:'Main Dining',s:'seated'},
+  {id:'T5',cap:6,zone:'Main Dining',s:'reserved'},{id:'T6',cap:4,zone:'Main Dining',s:'available'},
+  {id:'T7',cap:2,zone:'Main Dining',s:'seated'},{id:'T8',cap:4,zone:'Main Dining',s:'available'},
+  {id:'T9',cap:4,zone:'Main Dining',s:'available'},{id:'T10',cap:6,zone:'Main Dining',s:'seated'},
+  {id:'P1',cap:2,zone:'Patio',s:'available'},{id:'P2',cap:2,zone:'Patio',s:'seated'},
+  {id:'P3',cap:4,zone:'Patio',s:'available'},{id:'P4',cap:4,zone:'Patio',s:'reserved'},
+  {id:'P5',cap:6,zone:'Patio',s:'available'},{id:'P6',cap:4,zone:'Patio',s:'seated'},
+  {id:'L1',cap:2,zone:'O Lounge',s:'available'},{id:'L2',cap:4,zone:'O Lounge',s:'seated'},
+  {id:'L3',cap:4,zone:'O Lounge',s:'available'},{id:'L4',cap:6,zone:'O Lounge',s:'reserved'},
+  {id:'B1',cap:1,zone:'Bar',s:'available'},{id:'B2',cap:1,zone:'Bar',s:'seated'},
+  {id:'BH1',cap:4,zone:'Bar',s:'available'},{id:'BH2',cap:4,zone:'Bar',s:'seated'},
+  {id:'FP1',cap:2,zone:'Fire Pit',s:'available'},{id:'FP2',cap:4,zone:'Fire Pit',s:'turning'}
+];
+let selectedTable=null, floorScenario=2, floorScore=0;
+let floorGuest={name:'Martinez',size:4,pref:'Main Dining',note:'Anniversary'};
 
-// ── INIT SUPABASE ──
-try {
-  supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
-} catch(e) { console.log('Supabase not configured — demo mode'); }
-
-// ── VIEW TOGGLES ──
-function showSignupView() {
-  document.getElementById('loginFormView').style.display = 'none';
-  document.getElementById('signupFormView').style.display = 'block';
-}
-
-function showLoginView() {
-  document.getElementById('loginFormView').style.display = 'block';
-  document.getElementById('signupFormView').style.display = 'none';
-}
-
-function setRole(role, el) {
-  currentRole = role;
-  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-}
-
-function openCheckout(plan) {
-  checkoutPlan = plan;
-  document.getElementById('co-plan').textContent = CONFIG.PLAN_NAMES[plan] || plan;
-  document.getElementById('co-price').textContent = CONFIG.PLAN_PRICES[plan] || '';
-  document.getElementById('checkoutOverlay').className = 'checkout-overlay show';
-}
-
-function closeCheckout() {
-  document.getElementById('checkoutOverlay').className = 'checkout-overlay';
-}
-
-
-
-// ── LANGUAGE ──
-function setLang(lang) {
-  currentLang = lang;
-  document.querySelectorAll('[data-en]').forEach(el => {
-    el.textContent = lang === 'es' ? el.dataset.es : el.dataset.en;
-  });
-  const btn = document.getElementById('langBtn');
-  if(btn) btn.textContent = lang === 'es' ? 'ES' : 'EN';
-  updateCard();
-}
-
-function toggleLang() {
-  setLang(currentLang === 'en' ? 'es' : 'en');
-}
-
-function setLoginLang(lang) {
-  currentLang = lang;
-  document.getElementById('loginLangEn').classList.toggle('active', lang === 'en');
-  document.getElementById('loginLangEs').classList.toggle('active', lang === 'es');
-}
+// PHONE SIM DATA
+const guestLines = [
+  "Hi, I'd like to make a reservation for dinner please.",
+  "Great! I was hoping to get a table for four of us.",
+  "We were thinking Saturday evening, around 8 o'clock?",
+  "Sure, it's Martinez. M-A-R-T-I-N-E-Z.",
+  "It's Carlos. And actually — it's our anniversary! Is there anything special you can do?",
+  "No allergies, but my wife prefers indoor seating — not near the bar if possible.",
+  "Sure, it's 954-555-0192.",
+  "That all sounds right — thank you so much! See you Saturday!"
+];
+let callStep=0, callScore=0, callTimer=null, callSecs=0;
+let checks={greeting:false,name:false,size:false,time:false,phone:false,special:false,confirm:false};
 
 // ── AUTH ──
-async function doLogin() {
-  const email = document.getElementById('loginEmail').value.trim();
-  const pass = document.getElementById('loginPass').value;
-  const err = document.getElementById('loginError');
-  err.className = 'login-error';
-  if (!email || !pass) {
-    err.textContent = 'Please enter your email and password.';
-    err.className = 'login-error show'; return;
-  }
-  const btn = document.getElementById('loginBtn');
-  btn.disabled = true;
-  btn.textContent = 'Signing in...';
-  try {
-    if (supabaseClient) {
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
-      if (error) throw error;
-      currentUser = { email: data.user.email, name: data.user.user_metadata?.full_name || email.split('@')[0], role: currentRole };
-    } else {
-      currentUser = { email, name: email.split('@')[0], role: currentRole };
-    }
+function showSignupView(){document.getElementById('loginFormView').style.display='none';document.getElementById('signupFormView').style.display='block';}
+function showLoginView(){document.getElementById('loginFormView').style.display='block';document.getElementById('signupFormView').style.display='none';}
+function setRole(role,el){currentRole=role;document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
+function setLoginLang(lang){currentLang=lang;document.getElementById('loginLangEn').classList.toggle('active',lang==='en');document.getElementById('loginLangEs').classList.toggle('active',lang==='es');}
+
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  const err=document.getElementById('loginError');
+  err.className='login-error';
+  if(!email||!pass){err.textContent='Please enter your email and password.';err.className='login-error show';return;}
+  const btn=document.getElementById('loginBtn');
+  btn.disabled=true;btn.textContent='Signing in...';
+  try{
+    if(supabaseClient){
+      const{data,error}=await supabaseClient.auth.signInWithPassword({email,password:pass});
+      if(error)throw error;
+      currentUser={email:data.user.email,name:data.user.user_metadata?.full_name||email.split('@')[0],role:currentRole};
+    }else{currentUser={email,name:email.split('@')[0],role:currentRole};}
     launchApp();
-  } catch(e) {
-    err.textContent = e.message || 'Sign in failed. Please check your credentials.';
-    err.className = 'login-error show';
-  }
-  btn.disabled = false;
-  btn.textContent = 'Sign in to FloorPass';
+  }catch(e){err.textContent=e.message||'Sign in failed.';err.className='login-error show';}
+  btn.disabled=false;btn.textContent='Sign in to FloorPass';
 }
 
-async function doSignup() {
-  const first = document.getElementById('sigFirst').value.trim();
-  const last = document.getElementById('sigLast').value.trim();
-  const email = document.getElementById('sigEmail').value.trim();
-  const rest = document.getElementById('sigRest').value.trim();
-  const pass = document.getElementById('sigPass').value;
-  const plan = document.getElementById('sigPlan').value;
-  const err = document.getElementById('signupError');
-  err.className = 'login-error';
-  if (!first || !last || !email || !rest || pass.length < 8) {
-    err.textContent = 'Please complete all fields. Password must be 8+ characters.';
-    err.className = 'login-error show'; return;
-  }
-  try {
-    if (supabaseClient) {
-      const { data, error } = await supabaseClient.auth.signUp({
-        email, password: pass,
-        options: { data: { full_name: first + ' ' + last, restaurant: rest, plan, role: 'employee' } }
-      });
-      if (error) throw error;
-    }
-    currentUser = { email, name: first + ' ' + last, role: 'employee', restaurant: rest, plan };
+async function doSignup(){
+  const first=document.getElementById('sigFirst').value.trim();
+  const last=document.getElementById('sigLast').value.trim();
+  const email=document.getElementById('sigEmail').value.trim();
+  const rest=document.getElementById('sigRest').value.trim();
+  const pass=document.getElementById('sigPass').value;
+  const plan=document.getElementById('sigPlan').value;
+  const err=document.getElementById('signupError');
+  err.className='login-error';
+  if(!first||!last||!email||!rest||pass.length<8){err.textContent='Please complete all fields. Password must be 8+ characters.';err.className='login-error show';return;}
+  try{
+    if(supabaseClient){const{data,error}=await supabaseClient.auth.signUp({email,password:pass,options:{data:{full_name:first+' '+last,restaurant:rest,plan}}});if(error)throw error;}
+    currentUser={email,name:first+' '+last,role:'employee',restaurant:rest,plan};
     openCheckout(plan);
-  } catch(e) {
-    err.textContent = e.message || 'Signup failed. Please try again.';
-    err.className = 'login-error show';
-  }
+  }catch(e){err.textContent=e.message||'Signup failed.';err.className='login-error show';}
 }
 
-function launchApp() {
-  const isMgr = currentRole === 'manager';
-  document.getElementById('loginView').style.display = 'none';
-  document.getElementById('mainView').style.display = 'block';
-  const initials = (currentUser.name || 'U').substring(0,2).toUpperCase();
-  document.getElementById('navAv').textContent = initials;
-  document.getElementById('profileAv').textContent = initials;
-  document.getElementById('profileName').textContent = currentUser.name || currentUser.email;
-  document.getElementById('profileEmail').textContent = currentUser.email || '';
-  document.getElementById('profileRole').textContent = (isMgr ? 'Manager' : 'Host') + ' · ' + (currentUser.restaurant || 'YOLO Fort Lauderdale');
-  document.getElementById('dashGreet').textContent = 'Welcome back, ' + (currentUser.name || 'there') + ' 👋';
-  document.getElementById('dashSub').textContent = (isMgr ? 'Manager' : 'Host') + ' · FloorPass';
-  document.getElementById('mgrSection').style.display = isMgr ? 'block' : 'none';
-  setLang(currentLang);
+function launchApp(){
+  const isMgr=currentRole==='manager';
+  document.getElementById('loginView').style.display='none';
+  document.getElementById('mainView').style.display='block';
+  const init=(currentUser.name||'U').substring(0,2).toUpperCase();
+  document.getElementById('navAv').textContent=init;
+  document.getElementById('profileAv').textContent=init;
+  document.getElementById('profileName').textContent=currentUser.name||currentUser.email;
+  document.getElementById('profileEmail').textContent=currentUser.email||'';
+  document.getElementById('profileRole').textContent=(isMgr?'Manager':'Host')+' · YOLO Fort Lauderdale';
+  document.getElementById('dashGreet').textContent='Welcome back, '+(currentUser.name||'there')+' 👋';
+  document.getElementById('mgrSection').style.display=isMgr?'block':'none';
 }
 
-async function doLogout() {
-  if (supabaseClient) await supabaseClient.auth.signOut();
-  currentUser = null;
-  document.getElementById('mainView').style.display = 'none';
-  document.getElementById('loginView').style.display = 'block';
+async function doLogout(){
+  if(supabaseClient)await supabaseClient.auth.signOut();
+  currentUser=null;
+  document.getElementById('mainView').style.display='none';
+  document.getElementById('loginView').style.display='block';
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-dashboard').classList.add('active');
+  document.querySelectorAll('.snav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelector('.snav-item').classList.add('active');
 }
 
-async function processCheckout() {
-  const name = document.getElementById('co-name').value.trim();
-  const email = document.getElementById('co-email').value.trim();
-  const restaurant = document.getElementById('co-rest').value.trim();
-  const err = document.getElementById('co-error');
-  err.className = 'login-error';
-  if (!name || !email || !restaurant) {
-    err.textContent = currentLang === 'es' ? 'Por favor completa todos los campos.' : 'Please complete all fields.';
-    err.className = 'login-error show'; return;
-  }
-  const link = PAYMENT_LINKS[checkoutPlan] || PAYMENT_LINKS.custom;
-  window.open(link, '_blank');
+// ── CHECKOUT ──
+function openCheckout(plan){
+  checkoutPlan=plan;
+  document.getElementById('co-plan').textContent=CONFIG.PLAN_NAMES[plan]||plan;
+  document.getElementById('co-price').textContent=CONFIG.PLAN_PRICES[plan]||'';
+  document.getElementById('checkoutOverlay').className='checkout-overlay show';
+}
+function closeCheckout(){document.getElementById('checkoutOverlay').className='checkout-overlay';}
+async function processCheckout(){
+  const name=document.getElementById('co-name').value.trim();
+  const email=document.getElementById('co-email').value.trim();
+  const rest=document.getElementById('co-rest').value.trim();
+  const err=document.getElementById('co-error');
+  if(!name||!email||!rest){err.textContent='Please complete all fields.';err.className='login-error show';return;}
+  err.className='login-error';
+  window.open(PAYMENT_LINKS[checkoutPlan]||PAYMENT_LINKS.custom,'_blank');
   closeCheckout();
 }
 
-// Check for Stripe redirect result
-window.addEventListener('load', () => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('success')) {
-    alert('🎉 Welcome to Verishift! Your 14-day free trial has started. Check your email for confirmation.');
-    window.history.replaceState({}, '', window.location.pathname);
-  }
-  if (params.get('canceled')) {
-    alert('Checkout canceled. You can try again anytime.');
-    window.history.replaceState({}, '', window.location.pathname);
-  }
-});
-
-// ── NAVIGATION ──
-function showScreen(name, navEl) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.snav-item').forEach(n => n.classList.remove('active'));
-  const s = document.getElementById('screen-' + name);
-  if (s) s.classList.add('active');
-  if (navEl) navEl.classList.add('active');
-  document.getElementById('mainContent').scrollTop = 0;
+// ── NAV ──
+function showScreen(name,navEl){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.snav-item').forEach(n=>n.classList.remove('active'));
+  const s=document.getElementById('screen-'+name);
+  if(s)s.classList.add('active');
+  if(navEl)navEl.classList.add('active');
+  else{document.querySelectorAll('.snav-item').forEach(n=>{if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+name+"'"))n.classList.add('active');});}
+  document.getElementById('mainContent').scrollTop=0;
   closeSidebar();
+  if(name==='quizzes'){resetQuizScreen();}
 }
-
-function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-  document.getElementById('sidebarOverlay').classList.toggle('show');
-}
-
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebarOverlay').classList.remove('show');
-}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show');}
+function setLang(lang){currentLang=lang;document.getElementById('langBtn').textContent=lang==='es'?'🇪🇸 ES':'🇺🇸 EN';}
+function toggleLang(){setLang(currentLang==='en'?'es':'en');}
 
 // ── FLASHCARDS ──
-function flipCard() {
-  fcFlipped = !fcFlipped;
-  document.getElementById('fc').classList.toggle('flipped', fcFlipped);
-}
-
-function updateCard() {
-  fcFlipped = false;
+function switchDeck(d){
+  currentDeck=d;fcIdx=0;fcFlipped=false;
   document.getElementById('fc').classList.remove('flipped');
-  const card = fcCards[fcIdx][currentLang] || fcCards[fcIdx].en;
-  document.getElementById('fc-front').textContent = card.f;
-  document.getElementById('fc-back').textContent = card.b;
-  document.getElementById('fcCount').textContent = (fcIdx + 1) + ' / ' + fcCards.length;
-  document.getElementById('fcDeckLabel').textContent = (fcIdx + 1) + ' / ' + fcCards.length;
+  document.getElementById('deck-name').textContent=d==='drinks'?'Cocktails & Wine':'Food Menu';
+  document.getElementById('btn-drinks').className=d==='drinks'?'btn btn-primary':'btn btn-outline';
+  document.getElementById('btn-food').className=d==='food'?'btn btn-primary':'btn btn-outline';
+  updateCard();
 }
-
-function nextCard() { fcIdx = (fcIdx + 1) % fcCards.length; updateCard(); }
-function prevCard() { fcIdx = (fcIdx - 1 + fcCards.length) % fcCards.length; updateCard(); }
-
-// ── INIT ──
-updateCard();
-// Check if user already logged in via Supabase session
-if (supabaseClient) {
-  supabaseClient.auth.getSession().then(({ data: { session } }) => {
-    if (session) {
-      currentUser = {
-        email: session.user.email,
-        name: session.user.user_metadata?.full_name || session.user.email.split('@')[0],
-        role: 'employee'
-      };
-      launchApp();
-    }
-  });
+function flipCard(){fcFlipped=!fcFlipped;document.getElementById('fc').classList.toggle('flipped',fcFlipped);}
+function updateCard(){
+  const deck=fcDecks[currentDeck]||fcDecks.drinks;
+  if(fcIdx>=deck.length)fcIdx=0;
+  fcFlipped=false;
+  document.getElementById('fc').classList.remove('flipped');
+  document.getElementById('fc-front').textContent=deck[fcIdx].f;
+  document.getElementById('fc-back').textContent=deck[fcIdx].b;
+  document.getElementById('fcCount').textContent=(fcIdx+1)+' / '+deck.length;
+  document.getElementById('fcLabel').textContent=(fcIdx+1)+' / '+deck.length;
 }
-</script>
-</body>
-</html>
+function nextCard(){const d=fcDecks[currentDeck]||fcDecks.drinks;fcIdx=(fcIdx+1)%d.length;updateCard();}
+function prevCard(){const d=fcDecks[currentDeck]||fcDecks.drinks;fcIdx=(fcIdx-1+d.length)%d.length;updateCard();}
+
+// ── QUIZ ──
+function resetQuizScreen(){
+  document.getElementById('screen-quizzes').innerHTML=
+    '<div class="pg-title">Quizzes</div><div class="pg-sub">Score 80%+ to pass and unlock the next module</div>'+
+    '<div class="card"><div class="card-title"><i class="ti ti-help-circle" style="color:#f59e0b"></i>Available Quizzes</div>'+
+    '<div class="mod-list">'+
+    '<div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">L1 Quiz 1 — OpenTable Basics</div><div class="mod-meta">Score: 90%</div></div><span class="pill pill-green">Passed</span></div>'+
+    '<div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">L1 Quiz 2 — Menu Knowledge</div><div class="mod-meta">Score: 87%</div></div><span class="pill pill-green">Passed</span></div>'+
+    '<div class="mod-row" onclick="startQuiz()" style="cursor:pointer"><div class="mod-icon mi-blue"><i class="ti ti-player-play"></i></div><div class="mod-info"><div class="mod-name">L1 Quiz 3 — Reservations & Scenarios</div><div class="mod-meta">Must score 80%+</div></div><span class="pill pill-blue">Take Quiz</span></div>'+
+    '<div class="mod-row" style="opacity:0.5"><div class="mod-icon mi-gray"><i class="ti ti-lock"></i></div><div class="mod-info"><div class="mod-name">L2 Quiz 1 — Advanced Floor</div></div><span class="pill pill-gray">Locked</span></div>'+
+    '</div></div>';
+}
+function startQuiz(){qIdx=0;qScore=0;qAnswers=[];showQuestion();}
+function showQuestion(){
+  const q=quizQ[qIdx];
+  document.getElementById('screen-quizzes').innerHTML=
+    '<div class="pg-title">L1 Quiz 3</div>'+
+    '<div class="pg-sub">Question '+(qIdx+1)+' of '+quizQ.length+' · Score: '+qScore+'</div>'+
+    '<div class="prog-bar" style="height:8px;margin-bottom:20px"><div class="prog-fill pf-blue" style="width:'+(qIdx/quizQ.length*100)+'%"></div></div>'+
+    '<div class="card">'+
+    '<div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:20px;line-height:1.5">'+q.q+'</div>'+
+    '<div style="display:flex;flex-direction:column;gap:10px">'+
+    q.opts.map((o,i)=>'<button onclick="answer('+i+')" style="text-align:left;padding:14px 16px;border:2px solid var(--border);border-radius:10px;background:#fff;cursor:pointer;font-size:13px"><strong style="color:var(--blue)">'+String.fromCharCode(65+i)+'.</strong> '+o+'</button>').join('')+
+    '</div></div>';
+}
+function answer(idx){
+  const q=quizQ[qIdx];
+  const correct=idx===q.correct;
+  if(correct)qScore+=10;
+  qAnswers.push({correct,idx});
+  const scr=document.getElementById('screen-quizzes');
+  scr.querySelectorAll('button').forEach((b
