@@ -113,10 +113,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .alert-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px}
 .alert-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
 .alert-desc{font-size:12px;color:var(--text2)}
+/* Demo badge */
+.demo-badge{position:fixed;bottom:16px;right:16px;background:var(--navy);color:#38bdf8;font-size:11px;font-weight:700;padding:6px 14px;border-radius:20px;z-index:999;box-shadow:0 4px 12px rgba(0,0,0,0.3)}
 @media(max-width:768px){.hamburger{display:flex}.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.sidebar-overlay.show{display:block}.main{margin-left:0;padding:16px 14px}.stats-grid{grid-template-columns:1fr 1fr}.level-cards{grid-template-columns:1fr 1fr 1fr}}
 </style>
 </head>
 <body>
+
+<div class="demo-badge">🎯 Demo Mode — All Features Live</div>
 
 <!-- CHECKOUT -->
 <div class="checkout-overlay" id="checkoutOverlay">
@@ -157,6 +161,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="you@restaurant.com"/></div>
     <div class="field"><label>Password</label><input type="password" id="loginPass" placeholder="••••••••"/></div>
     <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign in to FloorPass</button>
+    <div class="login-note" style="margin-top:10px;font-size:12px;background:#f0fdf4;padding:8px 12px;border-radius:8px;color:#166534">
+      <strong>Demo:</strong> Any email + any password (6+ chars) works
+    </div>
     <div class="login-note">New to Verishift? <span style="color:var(--blue);cursor:pointer" onclick="showSignupView()">Create account</span></div>
   </div>
   <div id="signupFormView" style="display:none">
@@ -261,11 +268,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="mod-list">
       <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">Intro to OpenTable</div><div class="mod-meta">5 min</div></div><span class="pill pill-green">Done ✓</span></div>
       <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">Seating Walk-in Guests</div><div class="mod-meta">8 min</div></div><span class="pill pill-green">Done ✓</span></div>
-      <div class="mod-row" onclick="showScreen('phonesim',null)"><div class="mod-icon mi-blue"><i class="ti ti-phone"></i></div><div class="mod-info"><div class="mod-name">Phone Reservation Simulator</div><div class="mod-meta">AI call practice · New</div></div><span class="pill pill-blue">Start</span></div>
-      <div class="mod-row" onclick="showScreen('floorsim',null)"><div class="mod-icon mi-blue"><i class="ti ti-device-desktop"></i></div><div class="mod-info"><div class="mod-name">Floor Plan Simulator</div></div><span class="pill pill-amber">In progress</span></div>
-      <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">Food Menu Flashcards</div></div><span class="pill pill-green">Done ✓</span></div>
-      <div class="mod-row" onclick="showScreen('flashcards',null)"><div class="mod-icon mi-amber"><i class="ti ti-cards"></i></div><div class="mod-info"><div class="mod-name">Drink Menu Flashcards</div></div><span class="pill pill-amber">In progress</span></div>
-      <div class="mod-row" onclick="showScreen('quizzes',null)"><div class="mod-icon mi-red"><i class="ti ti-help-circle"></i></div><div class="mod-info"><div class="mod-name">Level 1 Final Quiz</div><div class="mod-meta">Must score 80%+</div></div><span class="pill pill-gray">Not started</span></div>
+      <div class="mod-row" onclick="showScreen('phonesim',null)" style="cursor:pointer"><div class="mod-icon mi-blue"><i class="ti ti-phone"></i></div><div class="mod-info"><div class="mod-name">Phone Reservation Simulator</div><div class="mod-meta">AI call practice · New</div></div><span class="pill pill-blue">Start →</span></div>
+      <div class="mod-row" onclick="showScreen('floorsim',null)" style="cursor:pointer"><div class="mod-icon mi-blue"><i class="ti ti-device-desktop"></i></div><div class="mod-info"><div class="mod-name">Floor Plan Simulator</div><div class="mod-meta">Interactive seating practice</div></div><span class="pill pill-amber">In progress →</span></div>
+      <div class="mod-row" onclick="showScreen('flashcards',null)" style="cursor:pointer"><div class="mod-icon mi-amber"><i class="ti ti-cards"></i></div><div class="mod-info"><div class="mod-name">Food Menu Flashcards</div><div class="mod-meta">10 food cards</div></div><span class="pill pill-amber">In progress →</span></div>
+      <div class="mod-row" onclick="showScreen('flashcards',null)" style="cursor:pointer"><div class="mod-icon mi-amber"><i class="ti ti-cards"></i></div><div class="mod-info"><div class="mod-name">Drink Menu Flashcards</div><div class="mod-meta">10 cocktail & wine cards</div></div><span class="pill pill-amber">In progress →</span></div>
+      <div class="mod-row" onclick="showScreen('quizzes',null)" style="cursor:pointer"><div class="mod-icon mi-red"><i class="ti ti-help-circle"></i></div><div class="mod-info"><div class="mod-name">Level 1 Final Quiz</div><div class="mod-meta">Must score 80%+</div></div><span class="pill pill-blue">Take Quiz →</span></div>
     </div>
   </div>
 </div>
@@ -285,17 +292,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
         <div style="width:44px;height:44px;border-radius:50%;background:#22c55e;display:flex;align-items:center;justify-content:center;font-size:20px">📞</div>
         <div><div style="font-size:14px;font-weight:700">Carlos Martinez</div><div style="font-size:11px;color:rgba(255,255,255,0.6)" id="call-timer">0:00</div></div>
-        <div style="margin-left:auto;background:#22c55e;color:#fff;padding:4px 12px;border-radius:10px;font-size:11px;font-weight:700" id="call-score">Score: 0</div>
+        <div style="margin-left:auto;background:#22c55e;color:#fff;padding:4px 12px;border-radius:10px;font-size:11px;font-weight:700" id="call-score-badge">Score: 0</div>
       </div>
-      <div id="call-transcript" style="background:rgba(255,255,255,0.05);border-radius:10px;padding:12px;min-height:120px;max-height:180px;overflow-y:auto;font-size:12px;margin-bottom:12px"></div>
+      <div id="call-transcript" style="background:rgba(255,255,255,0.05);border-radius:10px;padding:12px;min-height:120px;max-height:200px;overflow-y:auto;font-size:12px;margin-bottom:12px;line-height:1.6"></div>
       <div style="display:flex;gap:8px">
-        <input type="text" id="call-input" placeholder="Type your response as host..." style="flex:1;padding:10px;border-radius:8px;border:none;font-size:13px;background:rgba(255,255,255,0.1);color:#fff" onkeydown="if(event.key==='Enter')sendCallResponse()"/>
+        <input type="text" id="call-input" placeholder="Type your response as the host..." style="flex:1;padding:10px;border-radius:8px;border:none;font-size:13px;background:rgba(255,255,255,0.1);color:#fff" onkeydown="if(event.key==='Enter')sendCallResponse()"/>
         <button onclick="sendCallResponse()" style="padding:10px 16px;background:#22c55e;color:#fff;border:none;border-radius:8px;cursor:pointer;font-weight:700">Send</button>
         <button onclick="endCall()" style="padding:10px 16px;background:#ef4444;color:#fff;border:none;border-radius:8px;cursor:pointer">End</button>
       </div>
     </div>
     <div class="card">
-      <div class="card-title"><i class="ti ti-clipboard-list"></i>Reservation Form</div>
+      <div class="card-title"><i class="ti ti-clipboard-list"></i>Reservation Form — Fill as you gather info</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
         <div class="field"><label>Guest name</label><input type="text" id="rf-name" placeholder="Last, First"/></div>
         <div class="field"><label>Party size</label><select id="rf-size"><option value="">—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8+</option></select></div>
@@ -305,18 +312,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <div class="field"><label>Seating preference</label><select id="rf-seat"><option value="">—</option><option>Indoor</option><option>Outdoor patio</option><option>Bar area</option><option>O Lounge</option><option>No preference</option></select></div>
       </div>
       <div class="field"><label>Notes / Occasion</label><input type="text" id="rf-notes" placeholder="Anniversary, birthday, dietary needs..."/></div>
-      <button class="btn btn-primary" onclick="confirmRes()" style="margin-top:8px">Confirm Reservation</button>
+      <button class="btn btn-primary" onclick="confirmRes()" style="margin-top:8px"><i class="ti ti-check"></i> Confirm Reservation</button>
     </div>
     <div class="card">
       <div class="card-title"><i class="ti ti-list-check"></i>Call Score Checklist</div>
       <div style="display:flex;flex-direction:column;gap:8px" id="checklist">
-        <div id="ck-greeting" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-greeting-icon" style="font-size:16px">⭕</span>Proper greeting — named YOLO</div>
-        <div id="ck-name" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-name-icon" style="font-size:16px">⭕</span>Got guest name</div>
-        <div id="ck-size" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-size-icon" style="font-size:16px">⭕</span>Confirmed party size</div>
-        <div id="ck-time" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-time-icon" style="font-size:16px">⭕</span>Got date and time</div>
-        <div id="ck-phone" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-phone-icon" style="font-size:16px">⭕</span>Captured callback number</div>
-        <div id="ck-special" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-special-icon" style="font-size:16px">⭕</span>Asked about special needs</div>
-        <div id="ck-confirm" style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-confirm-icon" style="font-size:16px">⭕</span>Confirmed reservation back</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-greeting-icon" style="font-size:16px">⭕</span>Proper greeting — named YOLO</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-name-icon" style="font-size:16px">⭕</span>Got guest name</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-size-icon" style="font-size:16px">⭕</span>Confirmed party size</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-time-icon" style="font-size:16px">⭕</span>Got date and time</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-phone-icon" style="font-size:16px">⭕</span>Captured callback number</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-special-icon" style="font-size:16px">⭕</span>Asked about special needs</div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2)"><span id="ck-confirm-icon" style="font-size:16px">⭕</span>Confirmed reservation back</div>
       </div>
     </div>
   </div>
@@ -330,10 +337,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div id="floor-intro" class="card" style="background:#eff6ff;border-color:#bfdbfe;text-align:center;padding:28px">
     <div style="font-size:40px;color:var(--blue);margin-bottom:12px">🗺️</div>
     <div style="font-size:16px;font-weight:700;color:var(--blue);margin-bottom:6px">YOLO Fort Lauderdale — Interactive Floor Plan</div>
-    <div style="font-size:13px;color:#1e40af;margin-bottom:20px">5 zones · 26 tables · 2 scenarios available</div>
+    <div style="font-size:13px;color:#1e40af;margin-bottom:20px">5 zones · 26 tables · 2 scenarios available. Click a table to seat guests.</div>
     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-      <button class="btn btn-blue" onclick="loadFloor(2)">Scenario 2 — Seat a Party</button>
-      <button class="btn btn-outline" onclick="loadFloor(3)">Scenario 3 — Full House</button>
+      <button class="btn btn-blue" onclick="loadFloor(2)"><i class="ti ti-player-play"></i> Scenario 2 — Seat a Party of 4</button>
+      <button class="btn btn-outline" onclick="loadFloor(3)"><i class="ti ti-player-play"></i> Scenario 3 — Full House Shuffle</button>
     </div>
   </div>
   <div id="floor-active" style="display:none">
@@ -343,18 +350,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         <span id="floor-score" style="background:#4fc3f7;color:#1a1a2e;padding:3px 10px;border-radius:8px;font-size:12px;font-weight:700">Score: 0</span>
         <button onclick="resetFloor()" style="background:rgba(255,255,255,0.1);color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer">Reset</button>
       </div>
-      <div id="floor-instruction" style="font-size:12px;color:rgba(255,255,255,0.8)"></div>
+      <div id="floor-instruction" style="font-size:12px;color:rgba(255,255,255,0.8);line-height:1.5"></div>
     </div>
     <div class="card" style="padding:10px">
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;font-size:11px">
-        <span>🟢 Available</span><span>🔴 Seated</span><span>🟡 Reserved</span><span>🟠 Turning</span>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;font-size:11px;font-weight:600">
+        <span style="background:#dcfce7;color:#166534;padding:3px 10px;border-radius:8px">🟢 Available</span>
+        <span style="background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:8px">🔴 Seated</span>
+        <span style="background:#fef3c7;color:#b45309;padding:3px 10px;border-radius:8px">🟡 Reserved</span>
+        <span style="background:#ffedd5;color:#ea580c;padding:3px 10px;border-radius:8px">🟠 Turning</span>
       </div>
-      <div id="floor-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px"></div>
+      <div id="floor-zones"></div>
     </div>
-    <div class="card" id="floor-panel" style="display:none">
-      <div class="card-title"><i class="ti ti-armchair"></i>Selected Table</div>
-      <div id="floor-info" style="font-size:13px;margin-bottom:12px"></div>
-      <button class="btn btn-primary" id="floor-seat-btn" onclick="seatGuest()">Seat guests here</button>
+    <div class="card" id="floor-panel" style="display:none;background:#f0fdf4;border-color:#bbf7d0">
+      <div class="card-title"><i class="ti ti-armchair" style="color:var(--green)"></i>Selected Table — <span id="floor-table-id"></span></div>
+      <div id="floor-info" style="font-size:13px;margin-bottom:12px;color:var(--text2)"></div>
+      <button class="btn btn-green" id="floor-seat-btn" onclick="seatGuest()"><i class="ti ti-check"></i> Seat guests here</button>
       <button class="btn btn-outline" onclick="document.getElementById('floor-panel').style.display='none'" style="margin-left:8px">Cancel</button>
     </div>
     <div id="floor-result" style="display:none"></div>
@@ -367,7 +377,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="pg-sub">YOLO Fort Lauderdale — food & drink menu</div>
   <div class="card">
     <div class="card-title"><i class="ti ti-stack-2"></i>Select a deck</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px">
       <button id="btn-drinks" class="btn btn-primary" onclick="switchDeck('drinks')" style="justify-content:center">🍹 Cocktails & Wine (10)</button>
       <button id="btn-food" class="btn btn-outline" onclick="switchDeck('food')" style="justify-content:center">🍽️ Food Menu (10)</button>
     </div>
@@ -379,7 +389,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="fc-wrap">
       <div class="fc" id="fc" onclick="flipCard()">
-        <div class="fc-front" id="fc-front"></div>
+        <div class="fc-front" id="fc-front">Loading...</div>
         <div class="fc-back" id="fc-back"></div>
         <div class="fc-hint">tap to flip</div>
       </div>
@@ -396,15 +406,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <div class="screen" id="screen-quizzes">
   <div class="pg-title">Quizzes</div>
   <div class="pg-sub">Score 80%+ to pass and unlock the next module</div>
-  <div class="card">
+  <div class="card" id="quiz-list-card">
     <div class="card-title"><i class="ti ti-help-circle" style="color:#f59e0b"></i>Available Quizzes</div>
     <div class="mod-list">
       <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">L1 Quiz 1 — OpenTable Basics</div><div class="mod-meta">Score: 90%</div></div><span class="pill pill-green">Passed</span></div>
       <div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">L1 Quiz 2 — Menu Knowledge</div><div class="mod-meta">Score: 87%</div></div><span class="pill pill-green">Passed</span></div>
-      <div class="mod-row" onclick="startQuiz()" style="cursor:pointer"><div class="mod-icon mi-blue"><i class="ti ti-player-play"></i></div><div class="mod-info"><div class="mod-name">L1 Quiz 3 — Reservations & Scenarios</div><div class="mod-meta">Must score 80%+</div></div><span class="pill pill-blue">Take Quiz</span></div>
-      <div class="mod-row" style="opacity:0.5"><div class="mod-icon mi-gray"><i class="ti ti-lock"></i></div><div class="mod-info"><div class="mod-name">L2 Quiz 1 — Advanced Floor</div></div><span class="pill pill-gray">Locked</span></div>
+      <div class="mod-row" onclick="startQuiz()" style="cursor:pointer"><div class="mod-icon mi-blue"><i class="ti ti-player-play"></i></div><div class="mod-info"><div class="mod-name">L1 Quiz 3 — Reservations & Scenarios</div><div class="mod-meta">Must score 80%+ · 10 questions</div></div><span class="pill pill-blue">Take Quiz →</span></div>
+      <div class="mod-row" style="opacity:0.5;cursor:default"><div class="mod-icon mi-gray"><i class="ti ti-lock"></i></div><div class="mod-info"><div class="mod-name">L2 Quiz 1 — Advanced Floor</div><div class="mod-meta">Complete L1 to unlock</div></div><span class="pill pill-gray">Locked</span></div>
     </div>
   </div>
+  <div id="quiz-active" style="display:none"></div>
 </div>
 
 <!-- STAFF -->
@@ -468,7 +479,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="pg-sub">3 items need your attention</div>
   <div class="card">
     <div class="card-title"><i class="ti ti-bell" style="color:var(--red)"></i>Action Required</div>
-    <div class="alert-item" style="background:#fef2f2;border:1px solid #fecaca"><div class="alert-dot" style="background:var(--red)"></div><div><div class="alert-title">Tyler Brooks — Not started</div><div class="alert-desc">Hired 6 days ago. Zero modules completed.</div><button class="btn btn-danger" style="margin-top:8px;padding:6px 12px;font-size:12px;min-height:auto">Send Reminder</button></div></div>
+    <div class="alert-item" style="background:#fef2f2;border:1px solid #fecaca"><div class="alert-dot" style="background:var(--red)"></div><div><div class="alert-title">Tyler Brooks — Not started</div><div class="alert-desc">Hired 6 days ago. Zero modules completed.</div><button class="btn btn-danger" style="margin-top:8px;padding:6px 12px;font-size:12px;min-height:auto" onclick="alert('Reminder sent to Tyler Brooks!')">Send Reminder</button></div></div>
     <div class="alert-item" style="background:#fffbeb;border:1px solid #fde68a"><div class="alert-dot" style="background:#f59e0b"></div><div><div class="alert-title">Destiny Cruz — Low call score (68)</div><div class="alert-desc">Below 80% threshold. Recommend coaching.</div></div></div>
     <div class="alert-item" style="background:#fffbeb;border:1px solid #fde68a"><div class="alert-dot" style="background:#f59e0b"></div><div><div class="alert-title">Jake Moreno — Inactive 2 days</div><div class="alert-desc">Level 1 still at 65%. Last active May 11.</div></div></div>
   </div>
@@ -484,7 +495,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="field"><label>Reservation system</label><select><option>OpenTable</option><option>Resy</option><option>SevenRooms</option><option>Tock</option></select></div>
     <div class="field"><label>Manager email</label><input type="email" value="manager@yolofl.com"/></div>
     <div class="field"><label>Default language</label><select onchange="setLang(this.value)"><option value="en">English</option><option value="es">Español</option></select></div>
-    <button class="btn btn-primary" style="margin-top:6px"><i class="ti ti-check"></i>Save Settings</button>
+    <button class="btn btn-primary" style="margin-top:6px" onclick="alert('Settings saved!')"><i class="ti ti-check"></i>Save Settings</button>
   </div>
 </div>
 
@@ -495,7 +506,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="card">
     <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px">
       <div id="profileAv" style="width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff">JW</div>
-      <div><div style="font-size:17px;font-weight:700" id="profileName">James Wells</div><div style="font-size:13px;color:var(--text2)" id="profileRole">Host · YOLO Fort Lauderdale</div><div style="font-size:11px;color:var(--text3)" id="profileEmail">jwellspro@gmail.com</div></div>
+      <div><div style="font-size:17px;font-weight:700" id="profileName">James Wells</div><div style="font-size:13px;color:var(--text2)" id="profileRole">Host · YOLO Fort Lauderdale</div><div style="font-size:11px;color:var(--text3)" id="profileEmail">demo@verishift.com</div></div>
     </div>
     <div style="border-top:1px solid var(--border);padding-top:14px">
       <div class="card-title"><i class="ti ti-trophy" style="color:#f59e0b"></i>Certifications</div>
@@ -526,43 +537,53 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
   </div>
   <div class="card">
-    <div class="card-title"><i class="ti ti-arrows-exchange"></i>Upgrade Plan</div>
+    <div class="card-title"><i class="ti ti-arrows-exchange"></i>Change Plan</div>
     <div class="btn-row">
-      <button class="btn btn-outline" onclick="openCheckout('starter')">Switch to Starter — $99/mo</button>
-      <button class="btn btn-outline" onclick="openCheckout('group')">Upgrade to Group — $349/mo</button>
+      <button class="btn btn-outline" onclick="openStripe('starter')">Switch to Starter — $99/mo</button>
+      <button class="btn btn-blue" onclick="openStripe('group')">Upgrade to Group — $349/mo</button>
     </div>
   </div>
 </div>
 
-</div>
-</div>
-</div>
+</div><!-- end main -->
+</div><!-- end app-body -->
+</div><!-- end mainView -->
 
 <script>
-// ══════════════════════════════════════════════
-// PASTE YOUR KEYS HERE
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════
+// CONFIG — Replace with your real keys
+// ══════════════════════════════════════════
 const CONFIG = {
-  SUPABASE_URL: 'https://xarqooyyxuoepngickuz.supabase.co',
-  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhhcnFvb3l5eHVvZXBuZ2lja3V6Iiwicm9sZSI6ImFub24iLCJpYXQiOj',
-  STRIPE_PRICES: { starter:'price_1TX6ETDFHqQbeMA2lKGNVBE7', custom:'price_1TX6FCDFHqQbeMA2r6qgYXCP', group:'price_1TX6FVDFHqQbeMA2fV2dYX3k' },
-  PLAN_NAMES: { starter:'FloorPass Starter', custom:'FloorPass Custom', group:'FloorPass Group' },
-  PLAN_PRICES: { starter:'$99/mo', custom:'$149/mo', group:'$349/mo' }
+  SUPABASE_URL: 'YOUR_SUPABASE_URL',
+  SUPABASE_ANON_KEY: 'YOUR_SUPABASE_ANON_KEY'
 };
 const PAYMENT_LINKS = {
   starter: 'https://buy.stripe.com/00wbJ1g5Cce92rNfhr3Ru03',
   custom:  'https://buy.stripe.com/9B66oH8Da7XT2rNfhr3Ru02',
   group:   'https://buy.stripe.com/9B64gz4mU91X1nJ0mx3Ru04'
 };
-// ══════════════════════════════════════════════
+const PLAN_NAMES  = {starter:'FloorPass Starter',custom:'FloorPass Custom',group:'FloorPass Group'};
+const PLAN_PRICES = {starter:'$99/mo',custom:'$149/mo',group:'$349/mo'};
+// ══════════════════════════════════════════
 
+// Supabase — gracefully falls back to demo mode if keys not set
 let supabaseClient = null;
-try { supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY); } catch(e) { console.log('Demo mode'); }
+try {
+  if(CONFIG.SUPABASE_URL && !CONFIG.SUPABASE_URL.startsWith('YOUR_')) {
+    supabaseClient = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+  }
+} catch(e) { console.log('Supabase not configured — running in demo mode'); }
 
+// ── STATE ──
 let currentLang='en', currentRole='employee', currentUser=null, checkoutPlan='custom';
 let fcIdx=0, fcFlipped=false, currentDeck='drinks';
+let qIdx=0, qScore=0, qAnswers=[], quizActive=false;
+let selectedTable=null, floorScenario=2, floorScore=0;
+let callStep=0, callScore=0, callTimer=null, callSecs=0;
+let callEnded=false;
+let checks={greeting:false,name:false,size:false,time:false,phone:false,special:false,confirm:false};
 
-// FLASHCARD DATA
+// ── FLASHCARD DATA ──
 const fcDecks = {
   drinks:[
     {f:"What is the YOLO Mule?",b:"House-infused vodka, ginger beer, fresh lime, cucumber. $14 — most popular cocktail."},
@@ -574,12 +595,12 @@ const fcDecks = {
     {f:"What is the signature martini?",b:"YOLO Dirty Martini — Grey Goose, olive brine, blue cheese stuffed olives. $16."},
     {f:"What champagne is available?",b:"Moët & Chandon by the glass $18, Veuve Clicquot bottle $95."},
     {f:"What is the YOLO Sangria?",b:"Red wine, brandy, fresh citrus, seasonal fruit. $12 glass / $38 pitcher."},
-    {f:"Name a popular beer option.",b:"Taps rotate. Always include local Florida craft options and domestic staples. Ask server."}
+    {f:"Name a popular beer option.",b:"Taps rotate. Always include local Florida craft options and domestic staples. Ask server for current selection."}
   ],
   food:[
     {f:"What is the YOLO Wagyu Burger?",b:"8oz wagyu beef, truffle aioli, aged cheddar, brioche bun. $28. Most popular entrée."},
     {f:"Name two vegetarian entrées.",b:"1. Roasted Cauliflower Steak $22 — chimichurri, quinoa. 2. Wild Mushroom Risotto $24 — truffle oil, parmesan."},
-    {f:"What does 86'd mean?",b:"The item is sold out or unavailable. Always inform guests BEFORE they order."},
+    {f:"What does '86'd' mean?",b:"The item is sold out or unavailable. Always inform guests BEFORE they order."},
     {f:"Name a popular starter.",b:"Tuna Tartare $18 — avocado, sesame, wonton chips. Truffle Fries $12 — parmesan, truffle aioli."},
     {f:"What seafood options are on the menu?",b:"Pan Seared Salmon $32 — lemon butter, asparagus. Shrimp & Grits $28 — andouille, stone ground grits."},
     {f:"What to do when a guest has a nut allergy?",b:"Flag the table, inform the kitchen, use OpenTable allergy note field, verify every dish before service."},
@@ -590,7 +611,7 @@ const fcDecks = {
   ]
 };
 
-// QUIZ DATA
+// ── QUIZ DATA ──
 const quizQ = [
   {q:"A guest calls for a reservation. What is the FIRST thing you should say?",opts:["Sure, let me check availability","Thank you for calling YOLO Fort Lauderdale, how can I help you?","What's the name?","We might be fully booked"],correct:1,exp:"Always greet with the restaurant name first — it confirms the guest called the right place."},
   {q:"You are fully booked at 8 PM. A walk-in party of 6 arrives. What do you do?",opts:["Turn them away","Add them to the waitlist and give an estimated wait time","Seat them at a reserved table","Tell them to try another restaurant"],correct:1,exp:"Always offer the waitlist. Get their name and phone number and give a realistic wait time estimate."},
@@ -598,58 +619,81 @@ const quizQ = [
   {q:"Best table for a party of 4 requesting quiet INDOOR seating away from the bar?",opts:["Bar high-top","Patio table","Main dining room 4-top","O Lounge near DJ booth"],correct:2,exp:"Indoor, away from bar, 4-top — main dining room is the correct choice."},
   {q:"A guest asks what '86'd' means. You explain:",opts:["The table is reserved","The item is sold out or unavailable","The kitchen is closed","It is a daily special"],correct:1,exp:"86'd means sold out or unavailable. Always inform guests before they order."},
   {q:"When taking a phone reservation, what MUST you collect?",opts:["Name only","Name, party size, date, time, and phone number","Name and email only","Party size and credit card"],correct:1,exp:"The 5 essentials: name, party size, date, time, callback number. Plus ask about special occasions and dietary needs."},
-  {q:"The Martinez party reserved for 8:30 PM. It is 8:45 PM and they haven't arrived. What do you do?",opts:["Give the table away immediately","Wait 15 more minutes then call their number","Release the table immediately","Mark as no-show"],correct:1,exp:"Standard practice: wait 15 minutes past reservation time, then call. After 30 minutes, table can be released."},
-  {q:"A guest has a severe nut allergy. The correct procedure is:",opts:["Verbally tell the server","Note in OpenTable, inform kitchen, verify every dish before service","Ask guest to inform kitchen","Only mention if they order something with nuts"],correct:1,exp:"Nut allergies are life-threatening. Note in OpenTable, inform kitchen immediately, and verify every dish."},
-  {q:"What are YOLO's happy hour hours?",opts:["Daily 4-7 PM","Monday through Friday 3-7 PM at bar and fire pit only","Saturday and Sunday only","Monday through Friday 5-8 PM"],correct:1,exp:"Happy hour is Mon-Fri 3-7 PM, at the bar and fire pit area ONLY. First come, first served."},
-  {q:"A table is marked TURNING in the simulator. What does this mean?",opts:["The table is broken","Guests are finishing up — table will be available soon","The table is being cleaned","A reservation is being modified"],correct:1,exp:"TURNING means guests are wrapping up. Notify the next waitlist party and prepare to seat them."}
+  {q:"The Martinez party reserved for 8:30 PM. It is 8:45 PM and they haven't arrived. What do you do?",opts:["Give the table away immediately","Wait 15 more minutes then call their number","Release the table immediately","Mark as no-show right away"],correct:1,exp:"Standard practice: wait 15 minutes past reservation time, then call. After 30 minutes total, table can be released."},
+  {q:"A guest has a severe nut allergy. The correct procedure is:",opts:["Verbally tell the server","Note in OpenTable, inform kitchen, verify every dish before service","Ask guest to inform kitchen themselves","Only mention if they order something with nuts"],correct:1,exp:"Nut allergies are life-threatening. Note in OpenTable, inform kitchen immediately, and verify every dish."},
+  {q:"What are YOLO's happy hour hours?",opts:["Daily 4-7 PM","Monday through Friday 3-7 PM at bar and fire pit only","Saturday and Sunday only","Monday through Friday 5-8 PM"],correct:1,exp:"Happy hour is Mon-Fri 3-7 PM, at the bar and fire pit area ONLY."},
+  {q:"A table is marked TURNING in the floor simulator. What does this mean?",opts:["The table is broken","Guests are finishing up — table will be available soon","The table is being cleaned","A reservation is being modified"],correct:1,exp:"TURNING means guests are wrapping up. Notify the next waitlist party and prepare to seat them."}
 ];
-let qIdx=0, qScore=0, qAnswers=[];
 
-// FLOOR DATA
+// ── FLOOR DATA ──
 const floorTables = [
+  // Main Dining
   {id:'T1',cap:2,zone:'Main Dining',s:'available'},{id:'T2',cap:2,zone:'Main Dining',s:'seated'},
   {id:'T3',cap:4,zone:'Main Dining',s:'available'},{id:'T4',cap:4,zone:'Main Dining',s:'seated'},
-  {id:'T5',cap:6,zone:'Main Dining',s:'reserved'},{id:'T6',cap:4,zone:'Main Dining',s:'available'},
-  {id:'T7',cap:2,zone:'Main Dining',s:'seated'},{id:'T8',cap:4,zone:'Main Dining',s:'available'},
+  {id:'T5',cap:6,zone:'Main Dining',s:'reserved'}, {id:'T6',cap:4,zone:'Main Dining',s:'available'},
+  {id:'T7',cap:2,zone:'Main Dining',s:'seated'},   {id:'T8',cap:4,zone:'Main Dining',s:'available'},
   {id:'T9',cap:4,zone:'Main Dining',s:'available'},{id:'T10',cap:6,zone:'Main Dining',s:'seated'},
+  // Patio
   {id:'P1',cap:2,zone:'Patio',s:'available'},{id:'P2',cap:2,zone:'Patio',s:'seated'},
   {id:'P3',cap:4,zone:'Patio',s:'available'},{id:'P4',cap:4,zone:'Patio',s:'reserved'},
   {id:'P5',cap:6,zone:'Patio',s:'available'},{id:'P6',cap:4,zone:'Patio',s:'seated'},
+  // O Lounge
   {id:'L1',cap:2,zone:'O Lounge',s:'available'},{id:'L2',cap:4,zone:'O Lounge',s:'seated'},
   {id:'L3',cap:4,zone:'O Lounge',s:'available'},{id:'L4',cap:6,zone:'O Lounge',s:'reserved'},
+  // Bar
   {id:'B1',cap:1,zone:'Bar',s:'available'},{id:'B2',cap:1,zone:'Bar',s:'seated'},
   {id:'BH1',cap:4,zone:'Bar',s:'available'},{id:'BH2',cap:4,zone:'Bar',s:'seated'},
+  // Fire Pit
   {id:'FP1',cap:2,zone:'Fire Pit',s:'available'},{id:'FP2',cap:4,zone:'Fire Pit',s:'turning'}
 ];
-let selectedTable=null, floorScenario=2, floorScore=0;
-let floorGuest={name:'Martinez',size:4,pref:'Main Dining',note:'Anniversary'};
+let tableStates = {};
+let floorGuest = {};
 
-// PHONE SIM DATA
-const guestLines = [
-  "Hi, I'd like to make a reservation for dinner please.",
-  "Great! I was hoping to get a table for four of us.",
-  "We were thinking Saturday evening, around 8 o'clock?",
-  "Sure, it's Martinez. M-A-R-T-I-N-E-Z.",
-  "It's Carlos. And actually — it's our anniversary! Is there anything special you can do?",
-  "No allergies, but my wife prefers indoor seating — not near the bar if possible.",
-  "Sure, it's 954-555-0192.",
-  "That all sounds right — thank you so much! See you Saturday!"
+const scenarios = {
+  2: {title:'Scenario 2 — Seat a Party of 4',guest:{name:'Martinez',size:4,pref:'Main Dining',note:'Anniversary'},instruction:'The Martinez party (4 guests, anniversary, prefers indoor Main Dining) has arrived. Select the best available table for them.'},
+  3: {title:'Scenario 3 — Full House Shuffle',guest:{name:'Chen',size:2,pref:'Patio',note:'Prefers quiet outdoor'},instruction:'The Chen party (2 guests) requests a quiet outdoor Patio table. Find the best available option.'}
+};
+
+// ── PHONE SIM DATA ──
+const guestScript = [
+  {line:"Hi there! I'd like to make a reservation for dinner, please.",hint:"Greet the guest properly — say 'Thank you for calling YOLO Fort Lauderdale'"},
+  {line:"Great! We were hoping to get a table for four people.",hint:"Confirm party size — ask 'Absolutely! For a party of 4?'"},
+  {line:"We were thinking this Saturday evening — around 8 o'clock?",hint:"Confirm date and time — repeat it back"},
+  {line:"Sure, it's Martinez. M-A-R-T-I-N-E-Z.",hint:"Get the guest name — fill it in the form"},
+  {line:"It's Carlos. And actually — it's our anniversary! Can you note that?",hint:"Note the occasion in the form — say 'Congratulations! I'll make a note of that'"},
+  {line:"No allergies. My wife does prefer indoor seating though — away from the bar if possible.",hint:"Note seating preference — ask about dietary needs too"},
+  {line:"My callback number is 954-555-0192.",hint:"Capture the phone number — fill it in the form"},
+  {line:"That all sounds perfect — thank you so much! See you Saturday night!",hint:"Confirm all details back to the guest and close warmly"}
 ];
-let callStep=0, callScore=0, callTimer=null, callSecs=0;
-let checks={greeting:false,name:false,size:false,time:false,phone:false,special:false,confirm:false};
 
-// ── AUTH ──
-function showSignupView(){document.getElementById('loginFormView').style.display='none';document.getElementById('signupFormView').style.display='block';}
-function showLoginView(){document.getElementById('loginFormView').style.display='block';document.getElementById('signupFormView').style.display='none';}
-function setRole(role,el){currentRole=role;document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));el.classList.add('active');}
-function setLoginLang(lang){currentLang=lang;document.getElementById('loginLangEn').classList.toggle('active',lang==='en');document.getElementById('loginLangEs').classList.toggle('active',lang==='es');}
+// ══════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════
+function showSignupView(){
+  document.getElementById('loginFormView').style.display='none';
+  document.getElementById('signupFormView').style.display='block';
+}
+function showLoginView(){
+  document.getElementById('loginFormView').style.display='block';
+  document.getElementById('signupFormView').style.display='none';
+}
+function setRole(role,el){
+  currentRole=role;
+  document.querySelectorAll('.role-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+}
+function setLoginLang(lang){
+  currentLang=lang;
+  document.getElementById('loginLangEn').classList.toggle('active',lang==='en');
+  document.getElementById('loginLangEs').classList.toggle('active',lang==='es');
+}
 
 async function doLogin(){
   const email=document.getElementById('loginEmail').value.trim();
   const pass=document.getElementById('loginPass').value;
   const err=document.getElementById('loginError');
   err.className='login-error';
-  if(!email||!pass){err.textContent='Please enter your email and password.';err.className='login-error show';return;}
+  if(!email||pass.length<6){err.textContent='Please enter your email and password (6+ chars).';err.className='login-error show';return;}
   const btn=document.getElementById('loginBtn');
   btn.disabled=true;btn.textContent='Signing in...';
   try{
@@ -657,9 +701,15 @@ async function doLogin(){
       const{data,error}=await supabaseClient.auth.signInWithPassword({email,password:pass});
       if(error)throw error;
       currentUser={email:data.user.email,name:data.user.user_metadata?.full_name||email.split('@')[0],role:currentRole};
-    }else{currentUser={email,name:email.split('@')[0],role:currentRole};}
+    } else {
+      // Demo mode — any credentials work
+      currentUser={email,name:email.split('@')[0].replace(/[^a-zA-Z]/g,' ').trim()||'Demo User',role:currentRole};
+    }
     launchApp();
-  }catch(e){err.textContent=e.message||'Sign in failed.';err.className='login-error show';}
+  }catch(e){
+    err.textContent=e.message||'Sign in failed. Try demo mode with any password.';
+    err.className='login-error show';
+  }
   btn.disabled=false;btn.textContent='Sign in to FloorPass';
 }
 
@@ -674,46 +724,57 @@ async function doSignup(){
   err.className='login-error';
   if(!first||!last||!email||!rest||pass.length<8){err.textContent='Please complete all fields. Password must be 8+ characters.';err.className='login-error show';return;}
   try{
-    if(supabaseClient){const{data,error}=await supabaseClient.auth.signUp({email,password:pass,options:{data:{full_name:first+' '+last,restaurant:rest,plan}}});if(error)throw error;}
+    if(supabaseClient){
+      const{data,error}=await supabaseClient.auth.signUp({email,password:pass,options:{data:{full_name:first+' '+last,restaurant:rest,plan}}});
+      if(error)throw error;
+    }
     currentUser={email,name:first+' '+last,role:'employee',restaurant:rest,plan};
-    openCheckout(plan);
-  }catch(e){err.textContent=e.message||'Signup failed.';err.className='login-error show';}
+    launchApp();
+    setTimeout(()=>openStripe(plan),500);
+  }catch(e){err.textContent=e.message||'Signup failed. Try demo mode.';err.className='login-error show';}
 }
 
 function launchApp(){
   const isMgr=currentRole==='manager';
   document.getElementById('loginView').style.display='none';
   document.getElementById('mainView').style.display='block';
-  const init=(currentUser.name||'U').substring(0,2).toUpperCase();
+  const name=currentUser.name||currentUser.email||'User';
+  const init=name.substring(0,2).toUpperCase();
   document.getElementById('navAv').textContent=init;
   document.getElementById('profileAv').textContent=init;
-  document.getElementById('profileName').textContent=currentUser.name||currentUser.email;
+  document.getElementById('profileName').textContent=name;
   document.getElementById('profileEmail').textContent=currentUser.email||'';
   document.getElementById('profileRole').textContent=(isMgr?'Manager':'Host')+' · YOLO Fort Lauderdale';
-  document.getElementById('dashGreet').textContent='Welcome back, '+(currentUser.name||'there')+' 👋';
+  document.getElementById('dashGreet').textContent='Welcome back, '+name+' 👋';
   document.getElementById('mgrSection').style.display=isMgr?'block':'none';
+  // Init flashcards on load
+  updateCard();
 }
 
 async function doLogout(){
-  if(supabaseClient)await supabaseClient.auth.signOut();
+  if(supabaseClient) await supabaseClient.auth.signOut();
   currentUser=null;
   document.getElementById('mainView').style.display='none';
   document.getElementById('loginView').style.display='block';
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('screen-dashboard').classList.add('active');
-  document.querySelectorAll('.snav-item').forEach(n=>n.classList.remove('active'));
-  document.querySelector('.snav-item').classList.add('active');
+  showLoginView();
+  stopCallTimer();
 }
 
-// ── CHECKOUT ──
+// ══════════════════════════════════════════
+// CHECKOUT / STRIPE
+// ══════════════════════════════════════════
+function openStripe(plan){
+  const link = PAYMENT_LINKS[plan]||PAYMENT_LINKS.custom;
+  window.open(link,'_blank');
+}
 function openCheckout(plan){
   checkoutPlan=plan;
-  document.getElementById('co-plan').textContent=CONFIG.PLAN_NAMES[plan]||plan;
-  document.getElementById('co-price').textContent=CONFIG.PLAN_PRICES[plan]||'';
+  document.getElementById('co-plan').textContent=PLAN_NAMES[plan]||plan;
+  document.getElementById('co-price').textContent=PLAN_PRICES[plan]||'';
   document.getElementById('checkoutOverlay').className='checkout-overlay show';
 }
 function closeCheckout(){document.getElementById('checkoutOverlay').className='checkout-overlay';}
-async function processCheckout(){
+function processCheckout(){
   const name=document.getElementById('co-name').value.trim();
   const email=document.getElementById('co-email').value.trim();
   const rest=document.getElementById('co-rest').value.trim();
@@ -724,24 +785,38 @@ async function processCheckout(){
   closeCheckout();
 }
 
-// ── NAV ──
+// ══════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════
 function showScreen(name,navEl){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.snav-item').forEach(n=>n.classList.remove('active'));
   const s=document.getElementById('screen-'+name);
-  if(s)s.classList.add('active');
-  if(navEl)navEl.classList.add('active');
-  else{document.querySelectorAll('.snav-item').forEach(n=>{if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+name+"'"))n.classList.add('active');});}
-  document.getElementById('mainContent').scrollTop=0;
+  if(s) s.classList.add('active');
+  if(navEl){navEl.classList.add('active');}
+  else{
+    document.querySelectorAll('.snav-item').forEach(n=>{
+      const oc=n.getAttribute('onclick')||'';
+      if(oc.includes("'"+name+"'"))n.classList.add('active');
+    });
+  }
+  window.scrollTo(0,0);
   closeSidebar();
-  if(name==='quizzes'){resetQuizScreen();}
 }
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('show');}
-function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('show');}
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
 function setLang(lang){currentLang=lang;document.getElementById('langBtn').textContent=lang==='es'?'🇪🇸 ES':'🇺🇸 EN';}
 function toggleLang(){setLang(currentLang==='en'?'es':'en');}
 
-// ── FLASHCARDS ──
+// ══════════════════════════════════════════
+// FLASHCARDS
+// ══════════════════════════════════════════
 function switchDeck(d){
   currentDeck=d;fcIdx=0;fcFlipped=false;
   document.getElementById('fc').classList.remove('flipped');
@@ -750,49 +825,389 @@ function switchDeck(d){
   document.getElementById('btn-food').className=d==='food'?'btn btn-primary':'btn btn-outline';
   updateCard();
 }
-function flipCard(){fcFlipped=!fcFlipped;document.getElementById('fc').classList.toggle('flipped',fcFlipped);}
+function flipCard(){
+  fcFlipped=!fcFlipped;
+  document.getElementById('fc').classList.toggle('flipped',fcFlipped);
+}
 function updateCard(){
   const deck=fcDecks[currentDeck]||fcDecks.drinks;
-  if(fcIdx>=deck.length)fcIdx=0;
+  if(fcIdx>=deck.length) fcIdx=0;
+  if(fcIdx<0) fcIdx=deck.length-1;
   fcFlipped=false;
   document.getElementById('fc').classList.remove('flipped');
   document.getElementById('fc-front').textContent=deck[fcIdx].f;
   document.getElementById('fc-back').textContent=deck[fcIdx].b;
-  document.getElementById('fcCount').textContent=(fcIdx+1)+' / '+deck.length;
-  document.getElementById('fcLabel').textContent=(fcIdx+1)+' / '+deck.length;
+  const label=(fcIdx+1)+' / '+deck.length;
+  document.getElementById('fcCount').textContent=label;
+  document.getElementById('fcLabel').textContent=label;
 }
-function nextCard(){const d=fcDecks[currentDeck]||fcDecks.drinks;fcIdx=(fcIdx+1)%d.length;updateCard();}
-function prevCard(){const d=fcDecks[currentDeck]||fcDecks.drinks;fcIdx=(fcIdx-1+d.length)%d.length;updateCard();}
+function nextCard(){
+  const d=fcDecks[currentDeck]||fcDecks.drinks;
+  fcIdx=(fcIdx+1)%d.length;
+  updateCard();
+}
+function prevCard(){
+  const d=fcDecks[currentDeck]||fcDecks.drinks;
+  fcIdx=(fcIdx-1+d.length)%d.length;
+  updateCard();
+}
 
-// ── QUIZ ──
-function resetQuizScreen(){
-  document.getElementById('screen-quizzes').innerHTML=
-    '<div class="pg-title">Quizzes</div><div class="pg-sub">Score 80%+ to pass and unlock the next module</div>'+
-    '<div class="card"><div class="card-title"><i class="ti ti-help-circle" style="color:#f59e0b"></i>Available Quizzes</div>'+
-    '<div class="mod-list">'+
-    '<div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">L1 Quiz 1 — OpenTable Basics</div><div class="mod-meta">Score: 90%</div></div><span class="pill pill-green">Passed</span></div>'+
-    '<div class="mod-row"><div class="mod-icon mi-green"><i class="ti ti-check"></i></div><div class="mod-info"><div class="mod-name">L1 Quiz 2 — Menu Knowledge</div><div class="mod-meta">Score: 87%</div></div><span class="pill pill-green">Passed</span></div>'+
-    '<div class="mod-row" onclick="startQuiz()" style="cursor:pointer"><div class="mod-icon mi-blue"><i class="ti ti-player-play"></i></div><div class="mod-info"><div class="mod-name">L1 Quiz 3 — Reservations & Scenarios</div><div class="mod-meta">Must score 80%+</div></div><span class="pill pill-blue">Take Quiz</span></div>'+
-    '<div class="mod-row" style="opacity:0.5"><div class="mod-icon mi-gray"><i class="ti ti-lock"></i></div><div class="mod-info"><div class="mod-name">L2 Quiz 1 — Advanced Floor</div></div><span class="pill pill-gray">Locked</span></div>'+
-    '</div></div>';
+// ══════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════
+function startQuiz(){
+  qIdx=0;qScore=0;qAnswers=[];quizActive=true;
+  document.getElementById('quiz-list-card').style.display='none';
+  document.getElementById('quiz-active').style.display='block';
+  renderQuestion();
 }
-function startQuiz(){qIdx=0;qScore=0;qAnswers=[];showQuestion();}
-function showQuestion(){
+function renderQuestion(){
   const q=quizQ[qIdx];
-  document.getElementById('screen-quizzes').innerHTML=
-    '<div class="pg-title">L1 Quiz 3</div>'+
-    '<div class="pg-sub">Question '+(qIdx+1)+' of '+quizQ.length+' · Score: '+qScore+'</div>'+
-    '<div class="prog-bar" style="height:8px;margin-bottom:20px"><div class="prog-fill pf-blue" style="width:'+(qIdx/quizQ.length*100)+'%"></div></div>'+
-    '<div class="card">'+
-    '<div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:20px;line-height:1.5">'+q.q+'</div>'+
-    '<div style="display:flex;flex-direction:column;gap:10px">'+
-    q.opts.map((o,i)=>'<button onclick="answer('+i+')" style="text-align:left;padding:14px 16px;border:2px solid var(--border);border-radius:10px;background:#fff;cursor:pointer;font-size:13px"><strong style="color:var(--blue)">'+String.fromCharCode(65+i)+'.</strong> '+o+'</button>').join('')+
-    '</div></div>';
+  const pct=Math.round((qIdx/quizQ.length)*100);
+  document.getElementById('quiz-active').innerHTML=`
+    <div class="card" style="margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:6px">
+        <span>Question ${qIdx+1} of ${quizQ.length}</span>
+        <span style="font-weight:700;color:var(--blue)">Score: ${qScore}/${qIdx*10}</span>
+      </div>
+      <div class="prog-bar" style="margin-bottom:18px"><div class="prog-fill pf-blue" style="width:${pct}%"></div></div>
+      <div style="font-size:15px;font-weight:600;color:var(--text);line-height:1.5;margin-bottom:20px">${q.q}</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        ${q.opts.map((o,i)=>`<button onclick="answerQuiz(${i})" style="text-align:left;padding:14px 16px;border:2px solid var(--border);border-radius:10px;background:#fff;cursor:pointer;font-size:13px;transition:all 0.15s" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='var(--border)'"><strong style="color:var(--blue)">${String.fromCharCode(65+i)}.</strong> ${o}</button>`).join('')}
+      </div>
+    </div>`;
 }
-function answer(idx){
+function answerQuiz(idx){
   const q=quizQ[qIdx];
   const correct=idx===q.correct;
-  if(correct)qScore+=10;
-  qAnswers.push({correct,idx});
-  const scr=document.getElementById('screen-quizzes');
-  scr.querySelectorAll('button').forEach((b
+  if(correct) qScore+=10;
+  qAnswers.push({correct,chosen:idx});
+  // Show feedback
+  const btns=document.getElementById('quiz-active').querySelectorAll('button');
+  btns.forEach((b,i)=>{
+    b.style.cursor='default';
+    b.onclick=null;
+    b.onmouseover=null;
+    b.onmouseout=null;
+    if(i===q.correct) b.style.cssText+=';border-color:#22c55e;background:#f0fdf4';
+    else if(i===idx && !correct) b.style.cssText+=';border-color:#dc2626;background:#fef2f2';
+  });
+  // Add explanation + next button
+  const feedbackDiv=document.createElement('div');
+  feedbackDiv.style.cssText='margin-top:14px;padding:14px;border-radius:10px;font-size:13px;line-height:1.5';
+  feedbackDiv.style.background=correct?'#f0fdf4':'#fef2f2';
+  feedbackDiv.style.borderLeft=`4px solid ${correct?'#22c55e':'#dc2626'}`;
+  feedbackDiv.innerHTML=`<strong>${correct?'✅ Correct!':'❌ Not quite.'}</strong> ${q.exp}`;
+  document.getElementById('quiz-active').querySelector('.card').appendChild(feedbackDiv);
+  // Next / finish button
+  const nextBtn=document.createElement('button');
+  nextBtn.className=`btn btn-${correct?'green':'blue'}`;
+  nextBtn.style.marginTop='14px';
+  nextBtn.textContent=qIdx<quizQ.length-1?'Next Question →':'See Results';
+  nextBtn.onclick=()=>{qIdx++;qIdx<quizQ.length?renderQuestion():showQuizResults();};
+  document.getElementById('quiz-active').querySelector('.card').appendChild(nextBtn);
+}
+function showQuizResults(){
+  const pct=Math.round((qScore/(quizQ.length*10))*100);
+  const pass=pct>=80;
+  document.getElementById('quiz-active').innerHTML=`
+    <div class="card" style="text-align:center;padding:32px;background:${pass?'#f0fdf4':'#fef2f2'};border-color:${pass?'#bbf7d0':'#fecaca'}">
+      <div style="font-size:48px;margin-bottom:8px">${pass?'🏆':'📚'}</div>
+      <div style="font-size:24px;font-weight:700;color:${pass?'var(--green)':'var(--red)'};margin-bottom:4px">${pct}%</div>
+      <div style="font-size:16px;font-weight:600;margin-bottom:8px">${pass?'Quiz Passed! 🎉':'Not quite — review and try again'}</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:20px">You scored ${qScore} out of ${quizQ.length*10} points (${qAnswers.filter(a=>a.correct).length}/${quizQ.length} correct)</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="startQuiz()"><i class="ti ti-refresh"></i> Retake Quiz</button>
+        <button class="btn btn-outline" onclick="backToQuizList()"><i class="ti ti-arrow-left"></i> Back to Quizzes</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-list-check"></i>Question Review</div>
+      ${quizQ.map((q,i)=>{
+        const a=qAnswers[i];
+        return `<div style="padding:12px;border-radius:10px;margin-bottom:8px;background:${a&&a.correct?'#f0fdf4':'#fef2f2'};border:1px solid ${a&&a.correct?'#bbf7d0':'#fecaca'}">
+          <div style="font-size:12px;font-weight:600;color:${a&&a.correct?'var(--green)':'var(--red)'};margin-bottom:4px">${a&&a.correct?'✅ Correct':'❌ Incorrect'}</div>
+          <div style="font-size:13px;font-weight:500;margin-bottom:4px">${q.q}</div>
+          <div style="font-size:12px;color:var(--text2)">${q.exp}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+function backToQuizList(){
+  quizActive=false;
+  document.getElementById('quiz-list-card').style.display='block';
+  document.getElementById('quiz-active').style.display='none';
+  document.getElementById('quiz-active').innerHTML='';
+}
+
+// ══════════════════════════════════════════
+// PHONE SIMULATOR
+// ══════════════════════════════════════════
+function startPhoneSim(){
+  callStep=0; callScore=0; callSecs=0; callEnded=false;
+  checks={greeting:false,name:false,size:false,time:false,phone:false,special:false,confirm:false};
+  document.getElementById('phone-intro').style.display='none';
+  document.getElementById('phone-active').style.display='block';
+  document.getElementById('phone-results').style.display='none';
+  // Reset form
+  ['rf-name','rf-phone','rf-notes'].forEach(id=>document.getElementById(id).value='');
+  ['rf-size','rf-date','rf-time','rf-seat'].forEach(id=>document.getElementById(id).value='');
+  // Reset checklist
+  ['greeting','name','size','time','phone','special','confirm'].forEach(k=>{
+    document.getElementById('ck-'+k+'-icon').textContent='⭕';
+  });
+  updateCallScore();
+  document.getElementById('call-transcript').innerHTML='';
+  startCallTimer();
+  // Guest speaks first
+  setTimeout(()=>{
+    addTranscriptLine('guest', guestScript[0].line);
+    addHint(guestScript[0].hint);
+  },800);
+}
+function startCallTimer(){
+  stopCallTimer();
+  callTimer=setInterval(()=>{
+    callSecs++;
+    const m=Math.floor(callSecs/60);
+    const s=callSecs%60;
+    const el=document.getElementById('call-timer');
+    if(el) el.textContent=m+':'+(s<10?'0':'')+s;
+  },1000);
+}
+function stopCallTimer(){if(callTimer){clearInterval(callTimer);callTimer=null;}}
+
+function addTranscriptLine(role,text){
+  const t=document.getElementById('call-transcript');
+  if(!t) return;
+  const div=document.createElement('div');
+  div.style.cssText=`margin-bottom:8px;padding:8px 10px;border-radius:8px;${role==='guest'?'background:rgba(59,130,246,0.15);color:#93c5fd':'background:rgba(255,255,255,0.1);color:#fff'}`;
+  div.innerHTML=`<strong style="font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${role==='guest'?'#60a5fa':'#86efac'}">${role==='guest'?'Carlos (Guest)':'You'}</strong><div style="margin-top:3px;font-size:13px">${text}</div>`;
+  t.appendChild(div);
+  t.scrollTop=t.scrollHeight;
+}
+function addHint(hint){
+  const t=document.getElementById('call-transcript');
+  if(!t) return;
+  const div=document.createElement('div');
+  div.style.cssText='margin-bottom:8px;padding:6px 10px;border-radius:6px;background:rgba(251,191,36,0.15);border-left:3px solid #fbbf24;font-size:11px;color:#fbbf24';
+  div.textContent='💡 Tip: '+hint;
+  t.appendChild(div);
+  t.scrollTop=t.scrollHeight;
+}
+
+function sendCallResponse(){
+  if(callEnded) return;
+  const input=document.getElementById('call-input');
+  const text=input.value.trim();
+  if(!text) return;
+  input.value='';
+  addTranscriptLine('host',text);
+  const lower=text.toLowerCase();
+
+  // Score based on keywords in response
+  if(!checks.greeting && (lower.includes('yolo')||lower.includes('thank you for calling')||lower.includes('welcome')||lower.includes('good evening')||lower.includes('good afternoon')||lower.includes('hello'))){
+    checks.greeting=true; document.getElementById('ck-greeting-icon').textContent='✅'; callScore+=15;
+  }
+  if(!checks.name && (lower.includes('name')||lower.includes('martinez')||document.getElementById('rf-name').value)){
+    checks.name=true; document.getElementById('ck-name-icon').textContent='✅'; callScore+=15;
+    if(!document.getElementById('rf-name').value) document.getElementById('rf-name').value='Martinez, Carlos';
+  }
+  if(!checks.size && (lower.includes('four')||lower.includes('4')||lower.includes('party')||document.getElementById('rf-size').value)){
+    checks.size=true; document.getElementById('ck-size-icon').textContent='✅'; callScore+=15;
+    if(!document.getElementById('rf-size').value) document.getElementById('rf-size').value='4';
+  }
+  if(!checks.time && (lower.includes('8')||lower.includes('saturday')||lower.includes('time')||lower.includes('date')||document.getElementById('rf-date').value||document.getElementById('rf-time').value)){
+    checks.time=true; document.getElementById('ck-time-icon').textContent='✅'; callScore+=15;
+  }
+  if(!checks.phone && (lower.includes('number')||lower.includes('phone')||lower.includes('callback')||lower.includes('954')||document.getElementById('rf-phone').value)){
+    checks.phone=true; document.getElementById('ck-phone-icon').textContent='✅'; callScore+=10;
+  }
+  if(!checks.special && (lower.includes('allerg')||lower.includes('occasion')||lower.includes('special')||lower.includes('anniversary')||lower.includes('preference'))){
+    checks.special=true; document.getElementById('ck-special-icon').textContent='✅'; callScore+=15;
+  }
+  if(!checks.confirm && (lower.includes('confirm')||lower.includes('see you')||lower.includes('have you down')||lower.includes('all set')||lower.includes('look forward'))){
+    checks.confirm=true; document.getElementById('ck-confirm-icon').textContent='✅'; callScore+=15;
+  }
+  updateCallScore();
+
+  // Advance guest script
+  callStep++;
+  if(callStep<guestScript.length){
+    setTimeout(()=>{
+      addTranscriptLine('guest',guestScript[callStep].line);
+      addHint(guestScript[callStep].hint);
+      if(callStep===guestScript.length-1){
+        setTimeout(()=>{
+          addTranscriptLine('guest','[Guest has ended the call]');
+          endCall();
+        },2000);
+      }
+    },1200);
+  } else {
+    endCall();
+  }
+}
+
+function updateCallScore(){
+  const el=document.getElementById('call-score-badge');
+  if(el) el.textContent='Score: '+callScore;
+}
+
+function confirmRes(){
+  if(!checks.confirm){
+    checks.confirm=true;
+    document.getElementById('ck-confirm-icon').textContent='✅';
+    callScore+=15;
+    updateCallScore();
+    addTranscriptLine('host','I have confirmed the reservation for the Martinez party of 4 this Saturday at 8:00 PM, indoor seating. We will note the anniversary occasion. See you then!');
+  }
+}
+
+function endCall(){
+  if(callEnded) return;
+  callEnded=true;
+  stopCallTimer();
+  document.getElementById('phone-active').style.display='none';
+  const scored=Math.min(callScore,100);
+  const pass=scored>=70;
+  const checkedCount=Object.values(checks).filter(Boolean).length;
+  document.getElementById('phone-results').style.display='block';
+  document.getElementById('phone-results').innerHTML=`
+    <div class="card" style="background:${pass?'#f0fdf4':'#fef2f2'};border-color:${pass?'#bbf7d0':'#fecaca'};text-align:center;padding:28px">
+      <div style="font-size:48px;margin-bottom:8px">${pass?'📞✅':'📞'}</div>
+      <div style="font-size:24px;font-weight:700;color:${pass?'var(--green)':'var(--amber)'}">Score: ${scored}/100</div>
+      <div style="font-size:15px;font-weight:600;margin:8px 0">${pass?'Great call! Guest would be impressed.':'Good start — review the checklist and try again'}</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:20px">${checkedCount} of 7 call criteria met · Call duration: ${Math.floor(callSecs/60)}:${(callSecs%60).toString().padStart(2,'0')}</div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-green" onclick="startPhoneSim()"><i class="ti ti-refresh"></i> Try Again</button>
+        <button class="btn btn-outline" onclick="document.getElementById('phone-intro').style.display='block';document.getElementById('phone-results').style.display='none'"><i class="ti ti-arrow-left"></i> Back</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><i class="ti ti-list-check"></i>Checklist Review</div>
+      ${Object.entries(checks).map(([k,v])=>{
+        const labels={greeting:'Proper greeting — named YOLO',name:'Got guest name',size:'Confirmed party size',time:'Got date and time',phone:'Captured callback number',special:'Asked about special needs',confirm:'Confirmed reservation back'};
+        return `<div style="display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;margin-bottom:6px;background:${v?'#f0fdf4':'#fef2f2'}">
+          <span style="font-size:18px">${v?'✅':'❌'}</span>
+          <span style="font-size:13px;color:var(--text)">${labels[k]||k}</span>
+        </div>`;
+      }).join('')}
+    </div>`;
+}
+
+// ══════════════════════════════════════════
+// FLOOR SIMULATOR
+// ══════════════════════════════════════════
+function loadFloor(scenario){
+  floorScenario=scenario;
+  floorScore=0;
+  selectedTable=null;
+  // Deep copy table states
+  tableStates={};
+  floorTables.forEach(t=>{ tableStates[t.id]={...t}; });
+
+  const sc=scenarios[scenario]||scenarios[2];
+  floorGuest={...sc.guest};
+
+  document.getElementById('floor-intro').style.display='none';
+  document.getElementById('floor-active').style.display='block';
+  document.getElementById('floor-result').style.display='none';
+  document.getElementById('floor-panel').style.display='none';
+  document.getElementById('floor-title').textContent=sc.title;
+  document.getElementById('floor-score').textContent='Score: 0';
+  document.getElementById('floor-instruction').innerHTML=
+    `<strong>Guest:</strong> ${sc.guest.name} party · ${sc.guest.size} guests · Prefers: ${sc.guest.pref} · ${sc.guest.note}`;
+  renderFloor();
+}
+
+function renderFloor(){
+  const zones=['Main Dining','Patio','O Lounge','Bar','Fire Pit'];
+  const container=document.getElementById('floor-zones');
+  container.innerHTML='';
+  zones.forEach(zone=>{
+    const tables=floorTables.filter(t=>t.zone===zone);
+    const zoneDiv=document.createElement('div');
+    zoneDiv.style.marginBottom='16px';
+    zoneDiv.innerHTML=`<div style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">${zone}</div>`;
+    const grid=document.createElement('div');
+    grid.style.cssText='display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px';
+    tables.forEach(t=>{
+      const state=tableStates[t.id]||t;
+      const colors={available:{bg:'#dcfce7',border:'#22c55e',text:'#166534'},seated:{bg:'#fee2e2',border:'#dc2626',text:'#991b1b'},reserved:{bg:'#fef3c7',border:'#f59e0b',text:'#92400e'},turning:{bg:'#ffedd5',border:'#ea580c',text:'#9a3412'}};
+      const c=colors[state.s]||colors.available;
+      const isSelected=selectedTable===t.id;
+      const btn=document.createElement('div');
+      btn.style.cssText=`background:${c.bg};border:2px solid ${isSelected?'#3b82f6':c.border};border-radius:10px;padding:10px 8px;text-align:center;cursor:${state.s==='available'?'pointer':'default'};transition:all 0.15s;box-shadow:${isSelected?'0 0 0 3px rgba(59,130,246,0.3)':'none'}`;
+      btn.innerHTML=`<div style="font-size:13px;font-weight:700;color:${c.text}">${t.id}</div><div style="font-size:10px;color:${c.text};margin-top:2px">👥${t.cap}</div><div style="font-size:9px;color:${c.text};margin-top:1px;text-transform:capitalize">${state.s}</div>`;
+      if(state.s==='available'){
+        btn.onmouseover=()=>btn.style.transform='scale(1.05)';
+        btn.onmouseout=()=>btn.style.transform='scale(1)';
+        btn.onclick=()=>selectTable(t.id);
+      }
+      grid.appendChild(btn);
+    });
+    zoneDiv.appendChild(grid);
+    container.appendChild(zoneDiv);
+  });
+}
+
+function selectTable(tableId){
+  selectedTable=tableId;
+  const t=floorTables.find(x=>x.id===tableId);
+  const state=tableStates[tableId]||t;
+  document.getElementById('floor-panel').style.display='block';
+  document.getElementById('floor-table-id').textContent=tableId;
+  document.getElementById('floor-info').innerHTML=`
+    <strong>Table ${tableId}</strong> · ${t.zone} · Seats up to ${t.cap} guests · Status: ${state.s}<br/>
+    <span style="margin-top:6px;display:block">Guest needs: ${floorGuest.size} seats · Prefers: ${floorGuest.pref} · ${floorGuest.note}</span>`;
+  renderFloor();
+  document.getElementById('floor-panel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function seatGuest(){
+  if(!selectedTable) return;
+  const t=floorTables.find(x=>x.id===selectedTable);
+  const state=tableStates[selectedTable]||t;
+  let points=0, feedback=[], good=true;
+
+  if(state.s!=='available'){feedback.push('❌ That table is not available');good=false;}
+  if(t.cap < floorGuest.size){feedback.push(`❌ Table only seats ${t.cap} — guest needs ${floorGuest.size}`);good=false;}
+  if(t.zone===floorGuest.pref){feedback.push('✅ Correct zone — guest preference matched!');points+=40;}
+  else{feedback.push(`⚠️ Guest prefers ${floorGuest.pref} — this is ${t.zone}`);points-=10;}
+  if(t.cap>=floorGuest.size && t.cap<=floorGuest.size+2){feedback.push('✅ Right-sized table');points+=30;}
+  else if(t.cap>floorGuest.size+2){feedback.push('⚠️ Table is larger than needed — saving for bigger parties is better');points+=10;}
+  if(good) points+=30;
+
+  floorScore=Math.max(0,Math.min(100,points));
+  document.getElementById('floor-score').textContent='Score: '+floorScore;
+
+  if(good){tableStates[selectedTable].s='seated';}
+
+  const resultEl=document.getElementById('floor-result');
+  resultEl.style.display='block';
+  resultEl.innerHTML=`
+    <div class="card" style="background:${good?'#f0fdf4':'#fef2f2'};border-color:${good?'#bbf7d0':'#fecaca'}">
+      <div style="font-size:18px;font-weight:700;color:${good?'var(--green)':'var(--red)'};margin-bottom:10px">${good?'✅ Well done!':'❌ Not the best choice'} — Score: ${floorScore}/100</div>
+      ${feedback.map(f=>`<div style="font-size:13px;margin-bottom:6px">${f}</div>`).join('')}
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-green" onclick="loadFloor(${floorScenario})"><i class="ti ti-refresh"></i> Try Again</button>
+        <button class="btn btn-outline" onclick="document.getElementById('floor-intro').style.display='block';document.getElementById('floor-active').style.display='none'"><i class="ti ti-arrow-left"></i> Back</button>
+      </div>
+    </div>`;
+  document.getElementById('floor-panel').style.display='none';
+  selectedTable=null;
+  renderFloor();
+}
+
+function resetFloor(){loadFloor(floorScenario);}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  updateCard();
+});
+</script>
+</body>
+</html>
